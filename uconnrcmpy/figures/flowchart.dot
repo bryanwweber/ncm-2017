@@ -1,0 +1,90 @@
+digraph {
+	node [fillcolor=white style=filled]
+	newrank=true;
+		subgraph {
+			node [shape=cds]
+				filename [label="Input Filename"]
+				yaml [label="volume-trace.yaml"]
+				tracesin [label="pressure.txt
+volume.csv" height=0.75 width=1.5]
+				input [label=Input]
+		}
+		subgraph {
+			node [shape=rectangle]
+				condition [label=Condition]
+				experiment [label=Experiment]
+				fromtraces [label="VolumeFromPressure
+PressureFromVolume
+TemperatureFromPressure"]
+				simulation [label=Simulation]
+				class [label=Class]
+		}
+		subgraph {
+			node [shape=ellipse]
+				"add_experiment()"
+				"compare_to_sim()"
+				"create_volume_trace()"
+				function [label=Function]
+		}
+		subgraph {
+			node [shape=parallelogram]
+				tau [label=<Experimental &tau;<br />P<sub>c</sub>> fixedsize=true width=1.75]
+				tracesout [label="pressure.txt
+volume.csv" fixedsize=true height=0.75 width=1.5]
+				simout [label=<Simulated &tau;<br />T<sub>c</sub>> fixedsize=true height=0.75 width=1.5]
+				output [label=Output shape=parallelogram]
+		}
+		subgraph cluster0 {
+			graph [fillcolor=lightgrey label=Input style=filled]
+			edge [style=invis]
+					filename -> yaml
+					yaml -> tracesin
+		}
+		subgraph cluster3 {
+			graph [fillcolor=white label="Internal
+Classes" style=filled]
+			edge [style=invis]
+					experiment -> fromtraces
+					fromtraces -> simulation
+		}
+		subgraph cluster2 {
+			graph [fillcolor=violet label=Outputs style=filled]
+			edge [style=invis]
+					tau -> tracesout
+					tracesout -> simout
+		}
+		subgraph cluster1 {
+			graph [fillcolor=orange label="User Interface" style=filled]
+					condition -> "add_experiment()"
+					"add_experiment()" -> "create_volume_trace()"
+					"create_volume_trace()" -> "compare_to_sim()"
+		}
+		subgraph {
+			graph [rank=same]
+					filename -> "add_experiment()"
+					"add_experiment()" -> experiment
+					experiment -> tau
+		}
+		subgraph {
+			graph [rank=same]
+					yaml -> "create_volume_trace()"
+					"create_volume_trace()" -> fromtraces
+					fromtraces -> tracesout
+		}
+		subgraph {
+			graph [rank=same]
+					tracesin -> "compare_to_sim()"
+					"compare_to_sim()" -> simulation
+					simulation -> simout
+		}
+		subgraph {
+			graph [nodesep=0.1 rank=same]
+			edge [style=invis]
+					legend -> class
+					class -> function
+					function -> input
+					input -> output
+				legend [label="Legend:" shape=plaintext]
+		}
+			tracesin -> legend [style=invis]
+}
