@@ -289,8 +289,7 @@ intervention is necessary to determine the EOC. In either case, the
 value of the pressure at the EOC, \(P_C\), is recorded and the time at
 the EOC is taken to be \(t=\SI{0}{\s}\).
 
-\subsection{Calculating Ignition
-Delay}\label{calculating-ignition-delay}
+\subsection{Calculating Ignition Delay}\label{calculating-ignition-delay}
 
 The ignition delay is determined as the time difference between the EOC
 and the point of ignition. There are several definitions of the point of
@@ -335,7 +334,7 @@ The final parameter of interest presently is the EOC temperature,
 when reporting ignition delays. In general, it is difficult to measure
 the temperature as a function of time in the reaction chamber of the
 RCM, so methods to estimate the temperature from the pressure trace are
-generally used.
+used.
 
 The law of conservation of energy written for the ideal gases in the
 reaction chamber is:
@@ -348,7 +347,8 @@ where \(c_v\) is the specific heat at constant volume of the mixture,
 \(v\) is the specific volume, \(u_k\) and \(Y_k\) are the specific
 internal energy and mass fraction of the species \(k\), and \(t\) is
 time. For a constant-area piston, the rate of change of the volume is
-equal to the piston velocity. In UConnRCMPy, \cref{eq:first-law} is integrated by Cantera \autocite{cantera}.
+equal to the piston velocity. In UConnRCMPy, \cref{eq:first-law} is
+integrated by Cantera \autocite{cantera}.
 
 In Cantera, intensive thermodynamic information about the system is
 stored in an instance of the \mintinline{python}|Solution| class. The
@@ -420,7 +420,7 @@ difference of the volume as a function of time.
 Finally, the \mintinline{python}|IdealGasReactor| is installed into an instance of
 \mintinline{python}|ReactorNet| from Cantera \autocite{cantera}. The
 \mintinline{python}|ReactorNet| implements the interface to the solver CVODES.
-CVODES is an adaptive-time-stepping solver, distributed as part of the
+CVODES is an adaptive-time-stepping ODE solver, distributed as part of the
 SUNDIALS suite \autocite{Hindmarsh2005}.
 
 Two simulations can be triggered by the user that utilize this
@@ -441,8 +441,7 @@ critical to include reactions during the compression stroke when
 conducting simulations to compare a kinetic model to experimental
 results.
 
-\subsection{Simulating Post-EOC
-Processes}\label{simulating-post-eoc-processes}
+\subsection{Simulating Post-EOC Processes}\label{simulating-post-eoc-processes}
 
 As can be seen in \cref{fig:ign-delay-def}, the pressure
 decreases after the EOC due to heat transfer from the higher temperature
@@ -715,9 +714,8 @@ experiment into a YAML format file called \mintinline{python}|volume-trace.yaml|
 with the key \mintinline{python}|reacfile|. For this case, the reference experiment
 is the run that took place at 16:33:
 
-\begin{minted}{yaml}
-reacfile: 00_in_02_mm_373K-1282t-100x-19-Jul-15-1633.txt
-comptime: 1
+\begin{minted}{python}
+reacfile: '00_in_02_mm_373K-1282t-100x-19-Jul-15-1633.txt'
 \end{minted}
 
 Note that the file must be named exactly \mintinline{python}|volume-trace.yaml| and
@@ -762,9 +760,9 @@ Since there is good agreement between the non-reactive and reactive
 pressure traces, the user adds the non-reactive reference file name to
 \mintinline{python}|volume-trace.yaml|.
 
-\begin{minted}{yaml}
-reacfile: 00_in_02_mm_373K-1282t-100x-19-Jul-15-1633.txt
-nonrfile: NR_00_in_02_mm_373K-1278t-100x-19-Jul-15-1652.txt
+\begin{minted}{python}
+reacfile: '00_in_02_mm_373K-1282t-100x-19-Jul-15-1633.txt'
+nonrfile: NR_00_in_02_mm_373K-1278t-100x-19-Jul-15-1652.txt'
 comptime: 10
 \end{minted}
 
