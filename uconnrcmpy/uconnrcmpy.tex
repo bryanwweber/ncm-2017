@@ -10,10 +10,17 @@
 \usepackage{graphicx}
 \usepackage{mathtools}
 \usepackage{microtype}
-\usepackage[capitalize]{cleveref}
+\usepackage{minted}
 \usemintedstyle{friendly}
+
+% Fix missing mu character from a reference
+\usepackage{textcomp}
+\DeclareUnicodeCharacter{3BC}{\textmu}
+\DeclareUnicodeCharacter{39C}{\textmu}
+
+\usepackage[capitalize]{cleveref}
 %======================================================================
-\addbibresource{NCM-2017.bib}
+\addbibresource[location=remote]{http://localhost:23119/better-bibtex/collection?/0/2017-National-Combustion-Meeting/UConnRCMPy.biblatex}
 %======================================================================
 \newcommand\papertopic{Reaction Kinetics}
 %======================================================================
@@ -168,27 +175,28 @@ converted to a voltage signal by a charge amplifier with a nominal
 output of \SI{0}{\V} prior to the start of compression. In addition, the output
 range of \SIrange{0}{10}{\V} is set by the operator to correspond to a
 particular pressure range by setting a ``scale factor''. Typical values
-for the scale factor range between \SIrange{10}{100}{\bar\per\V}.
+for the scale factor range between
+\SIrange[range-phrase={ and }]{10}{100}{\bar\per\V}.
 
 The voltage output from the charge amplifier is digitized by a hardware
 data acquisition system (DAQ) and recorded into a plain text file by a
 LabView Virtual Instrument. The voltage is sampled at a rate chosen by
-the operator, typically between \SIrange{50}{100}{\kHz}. This provides
-sufficient resolution for events on the order of milliseconds; the
+the operator, typically between \SIrange[range-phrase={ and }]{50}{100}{\kHz}.
+This provides sufficient resolution for events on the order of milliseconds; the
 typical ignition delay measured with this RCM approximately ranges from
 \SIrange{5}{100}{\ms}.
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.75\textwidth]{figures/raw-voltage.png}
-\caption{Raw voltage trace and the voltage trace after filtering and
-smoothing from a typical RCM experiment. Note that the voltage in the
-figure varies from \SIrange{0}{1}{\V} because the scale factor is \SI{100}{\bar\per\V} and
-the maximum pressure for this case is near \SI{100}{\bar}. (a): Close up of the
-time around the EOC, demonstrating the fidelity of the smoothed and
-filtered signal with the original signal. (b): Close up of the time
-before the start of compression, demonstrating the offset of the initial
-voltage slightly below \SI{0}{\V}.}
+\caption{Raw voltage trace and the voltage trace after filtering from a typical
+RCM experiment. Note that the voltage in the figure varies from
+\SIrange{0}{1}{\V} because the scale factor is \SI{100}{\bar\per\V} and the
+maximum pressure for this case is near \SI{100}{\bar}. (a): Close up of the
+time around the EOC, demonstrating the fidelity of the filtered
+signal with the original signal. (b): Close up of the time before the start of
+compression, demonstrating the offset of the initial voltage slightly below
+\SI{0}{\V}.}
 \label{fig:raw-voltage}
 \end{figure}
 
