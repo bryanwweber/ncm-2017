@@ -22,7 +22,6 @@
 
 \LoadClass{article}
 
-\RequirePackage{minted}
 \RequirePackage{calc}
 
 %Set up biblatex
