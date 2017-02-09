@@ -200,27 +200,35 @@ compression, demonstrating the offset of the initial voltage slightly below
 \label{fig:raw-voltage}
 \end{figure}
 
-\Cref{fig:raw-voltage} shows a typical voltage trace measured from
-the RCM at UConn. Several features are apparent from this figure. First,
-the compression stroke takes approximately \SIrange{30}{40}{\ms} and
-approximately \SI{50}{\percent} of the pressure rise occurs in the last \SI{5}{\ms}of
-compression. Second, there is a slow pressure decrease after the EOC due
-to heat transfer from the reactants to the relatively colder chamber
-walls. Third, after some delay period there is a spike in the pressure
-corresponding to rapid heat release due to combustion. Finally, the
-signal can be somewhat noisy, requiring filtering and/or smoothing to
-produce a useful pressure trace.
+\Cref{fig:raw-voltage} shows a typical voltage trace measured from the RCM at
+UConn. Several features are apparent from this figure. First, the compression
+stroke takes approximately \SIrange{30}{40}{\ms} and approximately
+\SI{50}{\percent} of the pressure rise occurs in the last \SI{5}{\ms} of
+compression. Second, there is a slow pressure decrease after the EOC due to
+heat transfer from the reactants to the relatively colder chamber walls. Third,
+after some delay period there is a spike in the pressure corresponding to rapid
+heat release due to combustion. Finally, the signal can be somewhat noisy,
+requiring filtering and/or smoothing to produce a useful pressure trace.
 
 \subsection{Filtering and Smoothing}\label{filtering-and-smoothing}
 
-In the current version of UConnRCMPy \autocite{uconnrcmpy}, the voltage
-is filtered using a low-pass filter with a cutoff frequency of \SI{10}{\kHz}.
-The filter is constructed using the \mintinline{python}|firwin()| function from the
-\mintinline{python}|signals| module of SciPy \autocite{Jones2001} with the Blackman
-window \autocite{Blackman1958,Oppenheim1999} and a filter
-order of \(2^{14}-1\). The cutoff frequency, window type, and filter
-order were determined empirically, based on \cref{fig:frequency}. Methods to select a cutoff frequency that
-optimizes the signal-to-noise ratio are currently being investigated.
+In the current version of UConnRCMPy \autocite{uconnrcmpy}, the voltage is
+filtered using a second-order Butterworth filter. The cutoff frequency of the
+filter is chosen automatically by a procedure described in the work of
+\textcite{Yu1999}. Briefly, this procedure applies a low-pass filters of
+varying cutoff frequencies to the signal and calculates the root mean square
+residual between the filtered signal and the original signal.
+\Cref{fig:residuals} shows a typical plot of the residuals agains the cutoff
+frequency and demonstrates that the residuals are nearly linear for a range of
+cutoff frequencies. This range tends to be from one-tenth the Nyquist frequency
+to one-half the Nyquist frequency, so a line is fit to the residuals. The
+optimum cutoff frequency is chosen as the frequency where the $y$-intercept of
+this linear fit crosses the residuals curve. In practice, this is accomplished
+by shifting the residuals curve down by the intercept and fitting a
+\mintedinline{python}|UnivariateSpline| from the
+\mintedinline{python}|scipy.interpolate| module \autocite{Jones2001} to the
+shifted residuals curve. The root of the spline is then where the intercept
+crosses the curve.
 
 \begin{figure}[htbp]
 \centering
