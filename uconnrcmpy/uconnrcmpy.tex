@@ -213,43 +213,37 @@ requiring filtering and/or smoothing to produce a useful pressure trace.
 \subsection{Filtering and Smoothing}\label{filtering-and-smoothing}
 
 In the current version of UConnRCMPy \autocite{uconnrcmpy}, the voltage is
-filtered using a second-order Butterworth filter. The cutoff frequency of the
+filtered using a first-order Butterworth filter. The cutoff frequency of the
 filter is chosen automatically by a procedure described in the work of
-\textcite{Yu1999}. Briefly, this procedure applies a low-pass filters of
+\textcite{Yu1999}. Briefly, this procedure applies low-pass filters of
 varying cutoff frequencies to the signal and calculates the root mean square
 residual between the filtered signal and the original signal.
-\Cref{fig:residuals} shows a typical plot of the residuals agains the cutoff
+\Cref{fig:residuals} shows a typical plot of the residuals versus the cutoff
 frequency and demonstrates that the residuals are nearly linear for a range of
-cutoff frequencies. This range tends to be from one-tenth the Nyquist frequency
-to one-half the Nyquist frequency, so a line is fit to the residuals. The
-optimum cutoff frequency is chosen as the frequency where the $y$-intercept of
-this linear fit crosses the residuals curve. In practice, this is accomplished
-by shifting the residuals curve down by the intercept and fitting a
-\mintedinline{python}|UnivariateSpline| from the
-\mintedinline{python}|scipy.interpolate| module \autocite{Jones2001} to the
-shifted residuals curve. The root of the spline is then where the intercept
-crosses the curve.
+cutoff frequencies. This range tends to be start at one-twentieth the Nyquist
+frequency but the end point is variable. Therefore, a series of linear
+regressions are performed as the end point is shifted from one-half the
+Nyquist frequency to one-tenth the Nyquist frequency. Then, the $y$-intercept
+of the regression with the highest coefficient of determination is used to
+choose the optimal cutoff frequency. The optimum cutoff frequency is chosen as
+the frequency at the intersection of the $y$-intercept and the residuals curve.
+In practice, this is accomplished by shifting the residuals curve down
+by the intercept and fitting a \mintinline{python}|UnivariateSpline| from the
+\mintinline{python}|scipy.interpolate| module \autocite{Jones2001} to the
+shifted residuals curve. The spline is fit such that it passes through every
+point in the residuals. The root of the spline is then where the intercept
+crosses the curve. The result of the filtering operation is shown on
+\cref{fig:raw-voltage}.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.9\textwidth]{figures/frequency.png}
-\caption{Power spectral density profiles of the original, filtered, and
-filtered and smoothed signals, showing the peaks of noise above 10 kHz.}
-\label{fig:frequency}
+\includegraphics[width=0.9\textwidth]{figures/residuals.png}
+\caption{Root mean squared residuals of the filtered signal compared to the
+original signal for a range of filter cutoff frequencies. The optimal frequency
+is chosen by the intersection of the residuals curve and the $y$-intercept of
+the linear fit to the residuals curve.}
+\label{fig:residuals}
 \end{figure}
-
-After filtering, the signal is smoothed by a moving average filter with
-a width of 21 points. This width was selected empirically based on
-\cref{fig:raw-voltage} to minimize the deviation of the
-smoothed voltage from the raw voltage during the ignition, and methods
-to automatically choose an optimal width are being investigated. It is
-desired that the signal remain the same length through this operation,
-but the convolution operation used to apply the moving average zero-pads
-the first and last 10 points. To avoid a bias in the initial voltage,
-the first 10 points are set equal to the value of the 11th point; the
-final 10 points are not important in the rest of the analysis and are
-ignored. The result of the filtering and smoothing operations is shown
-on \cref{fig:raw-voltage}.
 
 \subsection{Offset Correction and Pressure Calculation}\label{offset-correction-and-pressure-calculation}
 
@@ -285,42 +279,20 @@ determined by finding the local maximum of the pressure prior to
 ignition. This is done by searching backwards in time from the global
 maximum pressure in the pressure trace (typically, the global maximum of
 the pressure is due to ignition) until a minimum in the pressure is
-reached. Since the precise time of the minimum is not important for this
-method, the search is done by comparing the pressure at a given index
-\(i\) to the pressure at point \(i-50\), starting with the index of the
-global maximum pressure. The comparison is not made to the adjacent
-point to avoid the influence of noise. If \(P(i) \geq P(i-50)\), the
-index is decremented and the process is repeated until
-\(P(i) < P(i-50)\). This value of \(i\) is approximately at the minimum
-of pressure prior to ignition, so the maximum of the pressure in points
-to the left of the minimum will be the EOC.
-
-This method is generally robust, but it fails when there is no minimum
-in the pressure between the EOC and ignition, or the minimum pressure is
-very close to the EOC pressure. This may be the case for short ignition
-delays, on the order of \SI{5}{\ms} or less. In these cases, the comparison
-offset (which is set to 50 points by default) can be reduced to improve
-the granularity of the search; if the method still fails, manual
-intervention is necessary to determine the EOC. In either case, the
-value of the pressure at the EOC, \(P_C\), is recorded and the time at
-the EOC is taken to be \(t=\SI{0}{\s}\).
+reached. The maximum of the pressure in points to the left of the minimum
+is defined as the EOC. The value of the pressure at the EOC, \(P_C\), is
+recorded and the time at the EOC is taken to be \(t=\SI{0}{\s}\).
 
 \subsection{Calculating Ignition Delay}\label{calculating-ignition-delay}
 
 The ignition delay is determined as the time difference between the EOC
-and the point of ignition. There are several definitions of the point of
-ignition; the most commonly used in RCM experiments is the inflection
-point in the pressure trace due to ignition. As before, finding zero
-crossings of the second time derivative of the pressure to define the
-inflection point is difficult due to noise; however, finding the maximum
-of the first derivative is trivial, particularly since the time before
-and shortly after the EOC can be excluded to avoid the peak in the
-derivative around the EOC.
-
+and the point of ignition, defined as the inflection point in the pressure
+trace due to ignition. The inflection point is found by the maximum
+of the first derivative of the pressure with respect to time.
 In the current version of UConnRCMPy \autocite{uconnrcmpy}, the first
 derivative of the experimental pressure trace is computed by a
 second-order forward differencing method. The derivative is then
-smoothed by the moving average algorithm with a width of 151 points.
+smoothed by a moving average algorithm with a width of 151 points.
 This value for the moving average window was chosen empirically.
 
 For some conditions, the reactants may undergo two distinct stages of
@@ -331,7 +303,7 @@ derivative, are relatively weak, making it hard to distinguish the peak
 due to ignition from the background noise. This is currently the area
 requiring the most manual intervention, and one area where significant
 improvements can be made by refining the differentiation and
-filtering/smoothing algorithms. An experiment that shows two clear peaks
+filtering algorithms. An experiment that shows two clear peaks
 in the derivative is shown in \cref{fig:ign-delay-def} to
 demonstrate the definition of the ignition delays.
 
