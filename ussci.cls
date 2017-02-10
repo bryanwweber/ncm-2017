@@ -22,10 +22,12 @@
 
 \LoadClass{article}
 
+\RequirePackage{minted}
+\usemintedstyle{friendly}
 \RequirePackage{calc}
 
 %Set up biblatex
-\usepackage[
+\RequirePackage[
     backend=biber,
     doi=true,
     sorting=none,
