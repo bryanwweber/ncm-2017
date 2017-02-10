@@ -320,10 +320,12 @@ The final parameter of interest presently is the EOC temperature,
 when reporting ignition delays. In general, it is difficult to measure
 the temperature as a function of time in the reaction chamber of the
 RCM, so methods to estimate the temperature from the pressure trace are
-used.
+used. The detailed procedure used in UConnRCMPy is described in the work
+of \textcite{Dames2016}, and an overview is given here.
 
-The law of conservation of energy written for the ideal gases in the
-reaction chamber is:
+In general, the temperature in the RCM reaction chamber as a function of
+time can be found by integrating the first law of thermodynamics for an
+ideal gas:
 %
 \begin{equation} \label{eq:first-law}
     c_v \frac{dT}{dt} = -P \frac{dv}{dt} - \sum_k u_k \frac{d Y_k}{dt}
@@ -332,85 +334,25 @@ reaction chamber is:
 where \(c_v\) is the specific heat at constant volume of the mixture,
 \(v\) is the specific volume, \(u_k\) and \(Y_k\) are the specific
 internal energy and mass fraction of the species \(k\), and \(t\) is
-time. For a constant-area piston, the rate of change of the volume is
-equal to the piston velocity. In UConnRCMPy, \cref{eq:first-law} is
-integrated by Cantera \autocite{cantera}.
-
-In Cantera, intensive thermodynamic information about the system is
-stored in an instance of the \mintinline{python}|Solution| class. The
-\mintinline{python}|Solution| classes used in this study model simple, compressible
-systems and require two independent properties, plus the composition, to
-fix the state. The two properties must be intensive (i.e., not dependent
-on system size), and are typically chosen from the pressure,
-temperature, and density. The thermodynamic information for each species
-is read from a file in the CTI format, described in the Cantera
-documentation \autocite{cantera}, when a \mintinline{python}|Solution| instance is
-created.
-
-In addition to evaluating thermodynamic data, Cantera \autocite{cantera}
-contains several objects used to model homogeneous reacting systems; the
-two used in UConnRCMPy are the \mintinline{python}|Reservoir| and the
-\mintinline{python}|IdealGasReactor|, which are subclasses of the generic
-\mintinline{python}|Reactor| class. A \mintinline{python}|Solution| object is installed in each
-\mintinline{python}|Reactor| subclass instance to manage the state information and
-evaluate thermodynamic properties. The difference between the
-\mintinline{python}|Reservoir| and the \mintinline{python}|IdealGasReactor| is simply that the
-state (i.e., the pressure, temperature, and chemical composition) of the
-\mintinline{python}|Solution| in a \mintinline{python}|Reservoir| is fixed.
+time. In UConnRCMPy, \cref{eq:first-law} is integrated by Cantera
+\autocite{cantera}.
 
 Integrating \cref{eq:first-law} requires knowledge of the
 volume of the reaction chamber as a function of time. To calculate the
 volume as a function of time, it is assumed that there is a core of gas
-in the reaction chamber that undergoes an isentropic compression
-\autocite{Lee1998}. Furthermore, it is assumed that there is negligible
-reactant consumption during the compression stroke.
-
-Constructing the volume trace is triggered by the user by running the
-\mintinline{python}|create_volume_trace()| method that implements the following
-procedure. A Cantera \mintinline{python}|Solution| object is initialized at the
-initial temperature, pressure, and composition of the reaction chamber.
-After initialization, UConnRCMPy stores the initial mass-specific
-entropy (\(s_0\)) and density (\(\rho_0\)). The initial volume is
+in the reaction chamber that undergoes an isentropic, constant composition,
+compression \autocite{Lee1998}. The initial entropy of the gas mixture is
+calculated using Cantera \autocite{cantera}. Subsequently, the state of the
+mixture is fixed by using the entropy and measured pressure; from this
+information, the volume is calculated. The initial volume is
 arbitrarily taken to be \(V_0=\SI{1.0}{\m\cubed}\). The initial volume used
 in constructing the volume trace is arbitrary provided that the same
 value is used for the initial volume in the simulations described below.
 However, extensive quantities such as the total heat release during
 ignition cannot be compared to experimental values.
 
-The measured pressure at each point in the pressure trace (\(P_i\)) is
-used with the previously recorded initial entropy (\(s_0\)) to set the
-state of the \mintinline{python}|Solution| object sequentially. At each point, the
-volume is computed by applying the ideal gas law:
-%
-\begin{equation}
- V_i = V_0 \frac{\rho_0}{\rho_i}
-\end{equation}
-%
-where \(\rho_i\) is the density at each point computed by the Cantera
-\mintinline{python}|Solution|. This procedure effects a constant composition
-isentropic compression process.
-
-Once the volume trace has been generated, it can be utilized in the
-\mintinline{python}|IdealGasReactor| and the solution of \cref{eq:first-law} by installing an instance of the
-\mintinline{python}|Wall| class. \mintinline{python}|Wall|s must be installed between instances
-of \mintinline{python}|Reactor|s, so in UConnRCMPy a \mintinline{python}|Wall| is installed
-between the \mintinline{python}|IdealGasReactor| that represents the reaction
-chamber and an instance of the \mintinline{python}|Reservoir| class. By specifying
-the velocity of the \mintinline{python}|Wall| using the volume trace, the
-\mintinline{python}|IdealGasReactor| will proceed through the same states as the
-reaction chamber in the experiment. The velocity of the \mintinline{python}|Wall| is
-specified by using an instance of the \mintinline{python}|VolumeProfile| class from
-the CanSen software \autocite{cansen}, which computes the first forward
-difference of the volume as a function of time.
-
-Finally, the \mintinline{python}|IdealGasReactor| is installed into an instance of
-\mintinline{python}|ReactorNet| from Cantera \autocite{cantera}. The
-\mintinline{python}|ReactorNet| implements the interface to the solver CVODES.
-CVODES is an adaptive-time-stepping ODE solver, distributed as part of the
-SUNDIALS suite \autocite{Hindmarsh2005}.
-
-Two simulations can be triggered by the user that utilize this
-procedure. In the first, the multiplier for all the reaction rates is
+Two simulations can be triggered by the user that solve \cref{eq:first-law}.
+In the first, the multiplier for all the reaction rates is
 set to zero, to simulate a constant composition (non-reactive) process.
 In the second, the reactions are allowed to proceed as normal. Only the
 non-reactive simulation is necessary to determine \(T_C\), which is
@@ -433,24 +375,13 @@ As can be seen in \cref{fig:ign-delay-def}, the pressure
 decreases after the EOC due to heat transfer from the higher temperature
 reactants to the reaction chamber walls. This process is specific to the
 machine that carried out the experiments, and to the conditions under
-which the experiment was conducted. Therefore, the rate of pressure
-decrease should be modeled and included in simulations that compare
-predicted ignition delays to the experimental values.
-
-To conduct this modeling, a non-reactive experiment is conducted, where
-\(\text{O}_2\) in the oxidizer is replaced with \(\text{N}_2\) to
-maintain a similar specific heat ratio but suppress the oxidation
-reactions that lead to ignition. The pressure trace from this
-non-reactive experiment should closely match that from the reactive
-experiment during the compression stroke, further validating the
-assumption of adiabatic, constant composition compression. Furthermore,
-the non-reactive pressure trace should closely match the reactive
-pressure trace after the EOC until exothermic reactions cause the
-pressure in the reactive experiment to begin to increase.
+which the experiment was conducted. To include the effect of this heat
+transfer into simulations, a non-reactive experiment is conducted, where
+\(\text{O}_2\) in the oxidizer is replaced with \(\text{N}_2\).
 
 To apply the effect of the post-compression heat loss into the
 simulations, the reaction chamber is modeled as undergoing an adiabatic
-volume expansion. Since the post-compression time is modeled as an
+volume expansion after EOC. Since the post-compression time is modeled as an
 isentropic expansion, the same procedure is used as in the computation
 of \(T_C\) to compute a volume trace for the post-EOC time. The only
 difference is that the non-reactive pressure trace is used after the EOC
@@ -458,16 +389,12 @@ instead of the reactive pressure trace. Once the volume trace is
 generated, it can be applied to a simulation by concatenating the volume
 trace of the compression stroke and the post-EOC volume trace together
 and following the procedure outlined in \cref{calculating-the-eoc-temperature}.
-For consistency, the ignition delay in a reactive
-simulation is defined in the same manner as in the reactive experiments,
-as the maxima of the time derivative of the pressure trace. This
-procedure has been validated experimentally by measuring the temperature
+This procedure has been validated experimentally by measuring the temperature
 in the reaction chamber during and after the compression stroke. The
 temperature of the reactants was found to be within $\pm\sim $\SI{5}{\K} of the
 simulated temperature \autocite{Das2012a,Uddi2012}.
 
-\section{Implementation of
-UConnRCMPy}\label{implementation-of-uconnrcmpy}
+\section{Implementation of UConnRCMPy}\label{implementation-of-uconnrcmpy}
 
 UConnRCMPy is constructed in a hierarchical manner. The main user
 interface to UConnRCMPy is through the \mintinline{python}|Condition| class, the
@@ -488,105 +415,35 @@ methods that make up the user interface:
 \end{itemize}
 
 The usage of these methods will be described in detail in the
-\href{usage-example}{Usage Example} section. In general, the user will
+\cref{usage-example} section. In general, the user will
 conduct several experiments and, using the \mintinline{python}|add_experiment()|
 method, will trigger UConnRCMPy to create instances of the
 \mintinline{python}|Experiment| class and extract the ignition delay.
 
 All of the information about a particular experimental run is stored in
-the \mintinline{python}|Experiment| class. When initialized, the \mintinline{python}|Experiment|
-expects an instance of the \mintinline{python}|pathlib.Path| class; if none is
-provided, it prompts the user to enter a file name that is expected to
-be in the current working directory. The file name should point to a
-tab-delimited plain text file that contains the voltage trace recorded
-by LabView from one experimental run. Then UConnRCMPy creates an
-instance of \mintinline{python}|VoltageTrace|, followed by an instance of
-\mintinline{python}|ExperimentalPressureTrace|. The pressure trace from the latter
-is processed to extract the ignition delay(s).
-
-The lowest level representation of data in UConnRCMPy is the
-\mintinline{python}|VoltageTrace| that contains the raw voltage signal and timing
-recorded from the DAQ, as well as the filtered and smoothed voltage
-traces. The filtering and smoothing algorithms are implemented as
-separate methods so they can be reused in other situations and are run
-automatically when the \mintinline{python}|VoltageTrace| is initialized.
-
-One step up from the \mintinline{python}|VoltageTrace| is the
-\mintinline{python}|ExperimentalPressureTrace| class. This class consumes a
-\mintinline{python}|VoltageTrace| and processes it into a pressure trace, given the
-multiplication factor from the charge amplifier and the initial
-pressure. This class also contains methods to compute the derivative of
-the experimental pressure trace, as discussed in
-\cref{calculating-ignition-delay}.
+the \mintinline{python}|Experiment| class. Information about the signal
+measured from the DAQ is stored in an instance of the
+\mintinline{python}|VoltageTrace| class, which reads the signal from a
+tab-delimited text file. When an instance of \mintinline{python}|Experiment|
+is initialized, it automatically creates an instance of
+\mintinline{python}|VoltageTrace| followed by an instance of
+\mintinline{python}|ExperimentalPressureTrace|. The pressure trace from the
+latter is processed to extract the ignition delay(s) and \(P_C\).
 
 When all the experiments are conducted and processed,
 \mintinline{python}|create_volume_trace()| further processes the experiments to
 create the volume trace necessary to run the simulations to determine
-\(T_C\). The actual computation of the volume trace is done by the
-\mintinline{python}|VolumeFromPressure| class. First, the volume trace of the
-pre-EOC portion is generated using the pre-EOC pressure trace, the
-experimental initial temperature, and an initial volume of
-\(V_0=\SI{1.0}{\m\cubed}\), as discussed in
-\cref{calculating-the-eoc-temperature}.
-A temperature trace is also constructed for the pre-EOC pressure trace
-using the \mintinline{python}|TemperatureFromPressure| class.
-
-For the post-EOC volume trace, the initial temperature is estimated as
-the final value of the temperature trace constructed for the pre-EOC
-period. Furthermore, the initial volume of the post-EOC volume trace is
-taken to be the final value of the pre-EOC volume trace, so that
-although there may be small mismatches in \(P_C\), the volume trace will
-be consistent.
-
-After generation, \mintinline{python}|create_volume_trace()| writes the volume
-trace out to a CSV file so that the volume trace can be used in other
-software. The reactive pressure trace is also written to a tab-separated
+\(T_C\). After generation, \mintinline{python}|create_volume_trace()| writes
+the volume trace out to a CSV file so that the volume trace can be used in
+other software. The reactive pressure trace is also written to a tab-separated
 file. Before writing, the volume and pressure traces are both
 downsampled by a factor of 5. This reduces the computational time of a
 simulation and does not have any effect on the simulated results.
-\mintinline{python}|create_volume_trace()| also generates a figure that plots the
-complete reactive pressure trace, a non-reactive pressure trace
-generated from the volume trace using the \mintinline{python}|PressureFromVolume|
-class, and a linear fit to the constant pressure period prior to the
-start of compression. This linear fit aids in determining a suitable
-compression time. Finally, the value of the pressure at the beginning of
-compression is put on the system clipboard to be pasted into a
-spreadsheet to record the \(P_0\) used for simulations. This may differ
-slightly from the \(P_0\) read from the static transducer due to noise
-in the signal.
 
 The final step is to use the volume trace in a simulation to determine
 \(T_C\). To begin the simulations, the user calls the
-\mintinline{python}|compare_to_sim()| method of the \mintinline{python}|Condition|. The
-\mintinline{python}|compare_to_sim()| method relies on the
-\mintinline{python}|run_simulation()| method, which in turn adds instances of the
-class \mintinline{python}|Simulation| to the \mintinline{python}|Condition| instance. Instances
-of \mintinline{python}|Simulation| can represent a reactive or a non-reactive
-experiment; if either type of simulation has already been added to the
-\mintinline{python}|Condition| instance, the user is asked whether they would like
-to overwrite the existing simulation.
-
-The \mintinline{python}|Simulation| class sets up the simulation in Cantera and
-importantly, sets the maximum time step to be the time step used in the
-volume trace, so that the solver does not take steps larger than the
-resolution of the velocity. Larger time steps may result in incorrect
-calculation of the state if the velocity is not properly applied to the
-reactor. The time, temperature, pressure, and simulated volume are
-stored in NumPy arrays \autocite{vanderWalt2011} and the derivative is
-computed using second order Lagrange polynomials, as suggested by Chapra
-and Canale \autocite{Chapra2010} because the time step is not constant
-in the simulation. Finally, the calculated value of \(T_C\) is placed
-into the system clipboard. If the reactive simulation is conducted, the
-overall ignition delay is also copied into the system clipboard. The
-first stage ignition delay must be found manually because determining
-peaks in the derivative is currently unreliable, as mentioned in
-\cref{calculating-ignition-delay} for experiments.
-
-The \mintinline{python}|compare_to_sim()| method also plots the experimental
-pressure trace and any of the simulated pressure traces that have been
-generated. If the simulated reactive pressure trace is generated, the
-time derivative of the pressure is also plotted, where the derivative is
-scaled by the maximum pressure in the reactive simulation.
+\mintinline{python}|compare_to_sim()| method of the
+\mintinline{python}|Condition|.
 
 \begin{figure}[htbp]
 \centering
@@ -618,11 +475,10 @@ the user is running in a Jupyter Notebook with an IPython kernel.
 
 These experiments were conducted with mixtures of propane, oxygen, and
 nitrogen \autocite{Dames2016}. The CTI file necessary to run this
-example can be found in the Supplementary Material of the work by Dames
-et al. \autocite{Dames2016}. It must be named exactly
-\mintinline{python}|species.cti| and placed in the current working directory. Then,
-the composition of the mixture under consideration must be added to the
-\mintinline{python}|initial_state| parameter of the \mintinline{python}|ideal_gas()| method:
+example can be found in the Supplementary Material of the work by
+\textcite{Dames2016}. Then, the composition of the mixture under consideration
+must be added to the \mintinline{python}|initial_state| parameter of the
+\mintinline{python}|ideal_gas()| method:
 
 \begin{minted}{python}
 ideal_gas(
@@ -658,24 +514,19 @@ repeated 5 times to ensure repeatable data is obtained.
 \begin{minted}{python}
 from uconnrcmpy import Condition
 from pathlib import Path
-%matplotlib
+%matplotlib qt5
 
-cond_00_in_02_mm = Condition()
+cond_00_in_02_mm = Condition(cti_file='./species.cti')
 # Conduct reactive experiment #1 on the RCM
-cond_00_in_02_mm.add_experiment(Path(
-    '00_in_02_mm_373K-1285t-100x-19-Jul-15-1620.txt'))
+cond_00_in_02_mm.add_experiment('00_in_02_mm_373K-1285t-100x-19-Jul-15-1620.txt')
 # Conduct reactive experiment #2 on the RCM
-cond_00_in_02_mm.add_experiment(Path(
-    '00_in_02_mm_373K-1282t-100x-19-Jul-15-1626.txt'))
+cond_00_in_02_mm.add_experiment('00_in_02_mm_373K-1282t-100x-19-Jul-15-1626.txt')
 # Conduct reactive experiment #3 on the RCM
-cond_00_in_02_mm.add_experiment(Path(
-    '00_in_02_mm_373K-1282t-100x-19-Jul-15-1633.txt'))
+cond_00_in_02_mm.add_experiment('00_in_02_mm_373K-1282t-100x-19-Jul-15-1633.txt')
 # Conduct reactive experiment #4 on the RCM
-cond_00_in_02_mm.add_experiment(Path(
-    '00_in_02_mm_373K-1282t-100x-19-Jul-15-1640.txt'))
+cond_00_in_02_mm.add_experiment('00_in_02_mm_373K-1282t-100x-19-Jul-15-1640.txt')
 # Conduct reactive experiment #5 on the RCM
-cond_00_in_02_mm.add_experiment(Path(
-    '00_in_02_mm_373K-1282t-100x-19-Jul-15-1646.txt'))
+cond_00_in_02_mm.add_experiment('00_in_02_mm_373K-1282t-100x-19-Jul-15-1646.txt')
 \end{minted}
 
 This sequence generates one figure showing all of the experiments
@@ -712,23 +563,9 @@ adds non-reactive experiments to the \mintinline{python}|Condition| by the same
 \mintinline{python}|add_experiment()| method and UConnRCMPy automatically
 determines whether the experiment is reactive or non-reactive.
 
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.9\textwidth]{figures/pressure-comparison.png}
-\caption{Comparison of the reactive pressure trace, the pressure trace
-output to the text file, the pressure trace computed from the volume
-trace, and the linear fit to the initial pressure demonstrating the
-choice of compression time. The dark blue, green, and red lines follow
-each other nearly exactly after the start of compression, so only the
-red line is visible. This is the desired result, indicating that the
-pressure traces agree.}
-\label{fig:pressure-comparison}
-\end{figure}
-
 \begin{minted}{python}
 # Conduct non-reactive experiment #1 on the RCM
-cond_00_in_02_mm.add_experiment(Path(
-'NR_00_in_02_mm_373K-1278t-100x-19-Jul-15-1652.txt'))
+cond_00_in_02_mm.add_experiment('NR_00_in_02_mm_373K-1278t-100x-19-Jul-15-1652.txt')
 \end{minted}
 
 UConnRCMPy determines that this is a non-reactive experiment and
@@ -748,7 +585,7 @@ pressure traces, the user adds the non-reactive reference file name to
 
 \begin{minted}{python}
 reacfile: '00_in_02_mm_373K-1282t-100x-19-Jul-15-1633.txt'
-nonrfile: NR_00_in_02_mm_373K-1278t-100x-19-Jul-15-1652.txt'
+nonrfile: 'NR_00_in_02_mm_373K-1278t-100x-19-Jul-15-1652.txt'
 comptime: 10
 \end{minted}
 
