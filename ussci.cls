@@ -24,6 +24,8 @@
 
 \RequirePackage{minted}
 \usemintedstyle{friendly}
+\newmintinline[python]{python}{}
+
 \RequirePackage{calc}
 
 %Set up biblatex

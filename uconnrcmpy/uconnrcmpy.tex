@@ -226,8 +226,8 @@ of the regression with the highest coefficient of determination is used to
 choose the optimal cutoff frequency. The optimum cutoff frequency is chosen as
 the frequency at the intersection of the $y$-intercept and the residuals curve.
 In practice, this is accomplished by shifting the residuals curve down
-by the intercept and fitting a \mintinline{python}|UnivariateSpline| from the
-\mintinline{python}|scipy.interpolate| module \autocite{Jones2001} to the
+by the intercept and fitting a \python|UnivariateSpline| from the
+\python|scipy.interpolate| module \autocite{Jones2001} to the
 shifted residuals curve. The spline is fit such that it passes through every
 point in the residuals. The root of the spline is then where the intercept
 crosses the curve. The result of the filtering operation is shown on
@@ -397,43 +397,43 @@ simulated temperature \autocite{Das2012a,Uddi2012}.
 \section{Implementation of UConnRCMPy}\label{implementation-of-uconnrcmpy}
 
 UConnRCMPy is constructed in a hierarchical manner. The main user
-interface to UConnRCMPy is through the \mintinline{python}|Condition| class, the
-highest level of data representation. The \mintinline{python}|Condition| class
+interface to UConnRCMPy is through the \python|Condition| class, the
+highest level of data representation. The \python|Condition| class
 contains all of the information pertaining to the experiments at a given
 condition. The intended use of this class is in an interactive Python
 interpreter (the author prefers the Jupyter Notebook with an IPython
-kernel \autocite{Perez2007}). \mintinline{python}|Condition| also contains all the
+kernel \autocite{Perez2007}). \python|Condition| also contains all the
 methods that make up the user interface:
 
 \begin{itemize}
 \item
-  \mintinline{python}|add_experiment()|
+  \python|add_experiment()|
 \item
-  \mintinline{python}|create_volume_trace()|
+  \python|create_volume_trace()|
 \item
-  \mintinline{python}|compare_to_sim()|
+  \python|compare_to_sim()|
 \end{itemize}
 
 The usage of these methods will be described in detail in the
 \cref{usage-example} section. In general, the user will
-conduct several experiments and, using the \mintinline{python}|add_experiment()|
+conduct several experiments and, using the \python|add_experiment()|
 method, will trigger UConnRCMPy to create instances of the
-\mintinline{python}|Experiment| class and extract the ignition delay.
+\python|Experiment| class and extract the ignition delay.
 
 All of the information about a particular experimental run is stored in
-the \mintinline{python}|Experiment| class. Information about the signal
+the \python|Experiment| class. Information about the signal
 measured from the DAQ is stored in an instance of the
-\mintinline{python}|VoltageTrace| class, which reads the signal from a
-tab-delimited text file. When an instance of \mintinline{python}|Experiment|
+\python|VoltageTrace| class, which reads the signal from a
+tab-delimited text file. When an instance of \python|Experiment|
 is initialized, it automatically creates an instance of
-\mintinline{python}|VoltageTrace| followed by an instance of
-\mintinline{python}|ExperimentalPressureTrace|. The pressure trace from the
+\python|VoltageTrace| followed by an instance of
+\python|ExperimentalPressureTrace|. The pressure trace from the
 latter is processed to extract the ignition delay(s) and \(P_C\).
 
 When all the experiments are conducted and processed,
-\mintinline{python}|create_volume_trace()| further processes the experiments to
+\python|create_volume_trace()| further processes the experiments to
 create the volume trace necessary to run the simulations to determine
-\(T_C\). After generation, \mintinline{python}|create_volume_trace()| writes
+\(T_C\). After generation, \python|create_volume_trace()| writes
 the volume trace out to a CSV file so that the volume trace can be used in
 other software. The reactive pressure trace is also written to a tab-separated
 file. Before writing, the volume and pressure traces are both
@@ -442,8 +442,8 @@ simulation and does not have any effect on the simulated results.
 
 The final step is to use the volume trace in a simulation to determine
 \(T_C\). To begin the simulations, the user calls the
-\mintinline{python}|compare_to_sim()| method of the
-\mintinline{python}|Condition|.
+\python|compare_to_sim()| method of the
+\python|Condition|.
 
 \begin{figure}[htbp]
 \centering
@@ -477,8 +477,8 @@ These experiments were conducted with mixtures of propane, oxygen, and
 nitrogen \autocite{Dames2016}. The CTI file necessary to run this
 example can be found in the Supplementary Material of the work by
 \textcite{Dames2016}. Then, the composition of the mixture under consideration
-must be added to the \mintinline{python}|initial_state| parameter of the
-\mintinline{python}|ideal_gas()| method:
+must be added to the \python|initial_state| parameter of the
+\python|ideal_gas()| method:
 
 \begin{minted}{python}
 ideal_gas(
@@ -496,7 +496,7 @@ Ellipses indicate input that was truncated to save space; the truncated
 input is present in the file available with the work of \textcite{Dames2016}. The
 initial temperature and pressure are arbitrary, since those are set
 based on information stored in the filename of the experiment, but the
-\mintinline{python}|mole_fractions| must be set to the appropriate values. The
+\python|mole_fractions| must be set to the appropriate values. The
 condition in this example is for a fuel rich mixture, with a target
 \(P_C\) of 30 bar. The user creates the \mintinline{python}|Condition|, then
 conducts a reactive experiment with the RCM and adds the experiment to
