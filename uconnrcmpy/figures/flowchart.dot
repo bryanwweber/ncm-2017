@@ -1,10 +1,14 @@
 digraph {
-	node [fillcolor=white style=filled]
+	node [fillcolor=white fontname="Liberation Serif" style=filled]
 	newrank=true;
 		subgraph {
 			node [shape=cds]
 				filename [label="Input Filename"]
-				yaml [label="volume-trace.yaml"]
+				yaml [label="reactive_file
+nonreactive_file
+reactive_compression_time
+reactive_end_time
+nonreactive_end_time" fixedsize=true height=1.5 width=2.5]
 				tracesin [label="pressure.txt
 volume.csv" height=0.75 width=1.5]
 				input [label=Input]
@@ -30,31 +34,32 @@ TemperatureFromPressure"]
 			node [shape=parallelogram]
 				tau [label=<Experimental &tau;<br />P<sub>c</sub>> fixedsize=true width=1.75]
 				tracesout [label="pressure.txt
-volume.csv" fixedsize=true height=0.75 width=1.5]
-				simout [label=<Simulated &tau;<br />T<sub>c</sub>> fixedsize=true height=0.75 width=1.5]
+volume.csv
+volume-trace.yaml" fixedsize=true height=0.75 width=2.5]
+				simout [label=<T<sub>c</sub><br />Simulated &tau;> fixedsize=true height=0.75 width=1.5]
 				output [label=Output shape=parallelogram]
 		}
 		subgraph cluster0 {
-			graph [fillcolor=lightgrey label=Input style=filled]
+			graph [fillcolor=lightgrey fontname="Liberation Serif" label=Input style=filled]
 			edge [style=invis]
 					filename -> yaml
 					yaml -> tracesin
 		}
 		subgraph cluster3 {
-			graph [fillcolor=white label="Internal
+			graph [fillcolor=white fontname="Liberation Serif" label="Internal
 Classes" style=filled]
 			edge [style=invis]
 					experiment -> fromtraces
 					fromtraces -> simulation
 		}
 		subgraph cluster2 {
-			graph [fillcolor=violet label=Outputs style=filled]
+			graph [fillcolor=violet fontname="Liberation Serif" label=Outputs style=filled]
 			edge [style=invis]
 					tau -> tracesout
 					tracesout -> simout
 		}
 		subgraph cluster1 {
-			graph [fillcolor=orange label="User Interface" style=filled]
+			graph [fillcolor=orange fontname="Liberation Serif" label="User Interface" style=filled]
 					condition -> "add_experiment()"
 					"add_experiment()" -> "create_volume_trace()"
 					"create_volume_trace()" -> "compare_to_sim()"
