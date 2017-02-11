@@ -6,6 +6,9 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \documentclass[12pt]{../ussci}
 
+\usepackage{enumitem}
+\setlist{noitemsep}
+
 \usepackage{siunitx}
 \usepackage{graphicx}
 \usepackage{mathtools}
@@ -62,46 +65,19 @@ CT, USA}
 
 \section{Introduction}\label{introduction}
 
-The world relies heavily on combustion to provide energy in useful and
-clean forms for human consumption; in particular, the transportation
-sector accounts for nearly \SI{30}{\percent} of the energy use in the United States
-and of that, more than \SI{90}{\percent} is supplied by combustion of fossil fuels
-\autocite{MER2016}. Unfortunately, emissions from the combustion of
-traditional fossil fuels have been implicated in a host of deleterious
-effects on human health and the environment \autocite{Avakian2002}. Two
-methods are being considered to reduce the impact of fossil fuel
-combustion in transportation on the environment, namely: 1) development
-of new fuel sources and 2) development of new engine technologies.
-
-The challenge for engineers is that it is not straightforward to combine
-new fuels with newly designed engines. Employing computer-aided design
-and modeling of new engines with new fuels will be critical to develop
-advanced engines to be able to utilize multiple conventional and
-alternative fuels. The key to this process is the development of
-accurate and predictive combustion models.
-
-One type of data that is particularly relevant to validate models for transportation
-applications is the ignition delay. There are several methods to measure the ignition
-delay at engine-relevant conditions, including shock tubes and rapid
-compression machines (RCMs). The
-primary diagnostic in most RCM experiments is the pressure measured as a
-function of time in the reaction chamber. This pressure trace is then
-processed to extract the ignition delay.
-
-In this paper, the design and operation of a software package to process
-the pressure data collected from RCMs is described. Our package, called
-UConnRCMPy \autocite{uconnrcmpy}, is designed to analyze the data
-acquired from the RCM at the University of Connecticut (UConn). Despite
-the initial focus on data from the UConn RCM, the package is designed to
-be extensible so that it can be used for data in different formats while
-providing a consistent interface to the user.
-
-Recognizing that reproducible research is an important goal for the
-scientific community \autocite{NatureEds2016}, and that the code used to
-process experimental data is an important part of reproducing research,
-the primary goal of UConnRCMPy is to enable consistent, reproducible
-analysis of RCM data. Thus, UConnRCMPy offers all of the features
-required to process standard RCM data including:
+Producing research outputs that can be reproduced by future scientists is one of
+the fundamental tenents of our present scientific methodology. In recent years,
+there has been a surge in interest in ensuring that research outputs are
+reproducible \autocite{NatureEds2016}. Recognizing that the code used to process
+experimental data is an important part of the chain, this paper presents the
+design and operation of a software package to process the pressure data
+collected from Rapid Compression Machines (RCMs). Our package, called UConnRCMPy
+\autocite{uconnrcmpy}, is designed to analyze the data acquired from the RCM at
+the University of Connecticut (UConn). Despite the initial focus on data from
+the UConn RCM, the package is designed to be extensible so that it can be used
+for data in different formats while providing a consistent interface to the
+user. Thus, UConnRCMPy offers all of the features required to process standard
+RCM data including:
 
 \begin{itemize}
 \item
@@ -129,73 +105,56 @@ detail in the literature, and it tightly integrates the temperature
 estimation routine into the workflow, reducing errors and
 inefficiencies.
 
-This paper serves to describe some of the important aspects of RCM data
-processing, particularly the choices that the operator must make that
-are rarely documented. In addition, as a complement to the in-source
-documentation, this paper documents the design choices, interface, and
-flexibility of UConnRCMPy.
+\section{RCM Signal Processing Procedure}\label{rcm-signal-processing-procedure}
 
-\section{Background}\label{background}
+\subsection{Signal measurement}\label{signal-measurement}
 
-The RCMs at the University of Connecticut have been described
-extensively elsewhere \autocite{Das2012,Mittal2007a}, and
-will be summarized here for reference. The RCMs use a single
-pneumatically accelerated and hydraulically decelerated piston. In a
-typical experiment, the reaction chamber is evacuated to an absolute
-pressure near \SI{1}{\torr}, measured by a high-accuracy static pressure
-transducer. Next, the reactants are filled in to the desired initial
-pressure (\(P_0\)), and a valve on the reaction chamber is closed.
-Compression is triggered by a digital control circuit. After
-compression, the piston is held in place to create a constant volume
-chamber in which reactions proceed. For appropriate combinations of
-pressure, temperature, and mixture composition, ignition will occur
-after some delay period. A single compression-delay-ignition sequence is
+The RCMs at the University of Connecticut have been described extensively
+elsewhere \autocite{Das2012,Mittal2007a}, and interested readers are directed to
+those papers for further details. The primary diagnostic on the RCM is the
+reaction chamber pressure during and after the compression process, measured by
+a dynamic pressure transducer. The pressure trace is processed to determine the
+quantities of interest, including the pressure and temperature at the EOC,
+\(P_C\) and \(T_C\) respectively, and the ignition delay, \(\tau\). These values
+depend on the pressure and temperature prior to the start of compression
+(\(P_0\) and \(T_0\), respectively), in addition to the composition of the
+reactant mixture. A single compression-delay-ignition sequence is
 referred to as an experiment or a run. Each experiment is repeated
 approximately 5 times at the same nominal initial conditions to ensure
 repeatability of the data, and this set of experiments is referred to in
 the following as a condition.
 
-The primary diagnostic on the RCM is the reaction chamber pressure,
-measured by a dynamic pressure transducer (separate from the static
-transducer used to measure \(P_0\)). The pressure trace is processed to
-determine the quantities of interest, including the pressure and
-temperature at the EOC, \(P_C\) and \(T_C\) respectively, and the
-ignition delay, \(\tau\). The ignition delay is typically measured at
-several values of \(T_C\) for a given value of \(P_C\) and mixture
-composition; this is referred to in the following as a data set.
-
-\section{RCM Signal Processing Procedure}\label{rcm-signal-processing-procedure}
-
-\subsection{Signal measurement}\label{signal-measurement}
-
-The dynamic pressure transducer outputs a charge signal that is
-converted to a voltage signal by a charge amplifier with a nominal
-output of \SI{0}{\V} prior to the start of compression. In addition, the output
-range of \SIrange{0}{10}{\V} is set by the operator to correspond to a
-particular pressure range by setting a ``scale factor''. Typical values
-for the scale factor range between
-\SIrange[range-phrase={ and }]{10}{100}{\bar\per\V}.
-
-The voltage output from the charge amplifier is digitized by a hardware
-data acquisition system (DAQ) and recorded into a plain text file by a
-LabView Virtual Instrument. The voltage is sampled at a rate chosen by
-the operator, typically between \SIrange[range-phrase={ and }]{50}{100}{\kHz}.
-This provides sufficient resolution for events on the order of milliseconds; the
-typical ignition delay measured with this RCM approximately ranges from
+The dynamic pressure transducer outputs a charge signal that is converted to a
+voltage signal by a charge amplifier with a nominal output of \SI{0}{\V} prior
+to the start of compression. In addition, the output range of
+\SIrange{0}{10}{\V} is set by the operator to correspond to a particular
+pressure range by setting a ``scale factor''. Typical values for the scale
+factor range between \SIrange[range-phrase={ and }]{10}{100}{\bar\per\V}. The
+voltage output from the charge amplifier is digitized by a hardware data
+acquisition system (DAQ) and recorded into a plain text file by a LabView
+Virtual Instrument. The voltage is sampled at a rate chosen by the operator,
+typically between \SIrange[range-phrase={ and }]{50}{100}{\kHz}. This provides
+sufficient resolution for events on the order of milliseconds; the typical
+ignition delay measured with this RCM approximately ranges from
 \SIrange{5}{100}{\ms}.
 
 \begin{figure}[htbp]
-\centering
-\includegraphics[width=0.75\textwidth]{figures/raw-voltage.png}
-\caption{Raw voltage trace and the voltage trace after filtering from a typical
-RCM experiment. Note that the voltage in the figure varies from
-\SIrange{0}{1}{\V} because the scale factor is \SI{100}{\bar\per\V} and the
-maximum pressure for this case is near \SI{100}{\bar}. (a): Close up of the
-time around the EOC, demonstrating the fidelity of the filtered
-signal with the original signal. (b): Close up of the time before the start of
-compression, demonstrating the offset of the initial voltage slightly below
-\SI{0}{\V}.}
-\label{fig:raw-voltage}
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/raw-voltage.pdf}
+        \caption{Raw voltage trace and the voltage trace after filtering from a typical
+        RCM experiment. (a): Close up of the
+        time around the EOC (b): Close up of the time before the start of
+        compression}
+        \label{fig:raw-voltage}
+    \end{minipage}\hfill%
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/residuals.pdf}
+        \caption{Root mean squared residuals of the filtered signal compared to the
+        original signal for a range of filter cutoff frequencies}
+        \label{fig:residuals}
+    \end{minipage}
 \end{figure}
 
 \Cref{fig:raw-voltage} shows a typical voltage trace measured from the RCM at
@@ -232,16 +191,6 @@ shifted residuals curve. The spline is fit such that it passes through every
 point in the residuals. The root of the spline is then where the intercept
 crosses the curve. The result of the filtering operation is shown on
 \cref{fig:raw-voltage}.
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.9\textwidth]{figures/residuals.png}
-\caption{Root mean squared residuals of the filtered signal compared to the
-original signal for a range of filter cutoff frequencies. The optimal frequency
-is chosen by the intersection of the residuals curve and the $y$-intercept of
-the linear fit to the residuals curve.}
-\label{fig:residuals}
-\end{figure}
 
 \subsection{Offset Correction and Pressure Calculation}\label{offset-correction-and-pressure-calculation}
 
@@ -306,11 +255,11 @@ in the derivative is shown in \cref{fig:ign-delay-def} to
 demonstrate the definition of the ignition delays.
 
 \begin{figure}[htbp]
-\centering
-\includegraphics[width=0.9\textwidth]{figures/ign-delay-def.png}
-\caption{Illustration of the definition of the ignition delay in a
-two-stage ignition case.}
-\label{fig:ign-delay-def}
+    \centering
+    \includegraphics[width=0.6\textwidth]{figures/ign-delay-def.pdf}
+    \caption{Illustration of the definition of the ignition delay in a
+    two-stage ignition case}
+    \label{fig:ign-delay-def}
 \end{figure}
 
 \subsection{Calculating the EOC Temperature}\label{calculating-the-eoc-temperature}
@@ -446,10 +395,10 @@ The final step is to use the volume trace in a simulation to determine
 \python|Condition|.
 
 \begin{figure}[htbp]
-\centering
-\includegraphics[width=0.9\textwidth]{figures/flowchart.png}
-\caption{Flowchart of information in UConnRCMPy.}
-\label{fig:flowchart}
+    \centering
+    \includegraphics[width=0.75\textwidth]{figures/flowchart.pdf}
+    \caption{Flowchart of information in \mbox{UConnRCMPy}}
+    \label{fig:flowchart}
 \end{figure}
 
 The general flow of the user interaction with UConnRCMPy is shown in
