@@ -1,5 +1,5 @@
 digraph {
-	node [fillcolor=white fontname="Liberation Serif" style=filled]
+	node [fillcolor=white fontname="Liberation Serif" size="14,12" style=filled]
 	newrank=true;
 		subgraph {
 			node [shape=cds]
