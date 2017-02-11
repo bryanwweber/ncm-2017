@@ -107,10 +107,8 @@ inefficiencies.
 
 \section{RCM Signal Processing Procedure}\label{rcm-signal-processing-procedure}
 
-\subsection{Signal measurement}\label{signal-measurement}
-
 The RCMs at the University of Connecticut have been described extensively
-elsewhere \autocite{Das2012,Mittal2007a}, and interested readers are directed to
+elsewhere \autocite{Das2012,Mittal2007a}, and interested readers are referred to
 those papers for further details. The primary diagnostic on the RCM is the
 reaction chamber pressure during and after the compression process, measured by
 a dynamic pressure transducer. The pressure trace is processed to determine the
@@ -119,24 +117,19 @@ quantities of interest, including the pressure and temperature at the EOC,
 depend on the pressure and temperature prior to the start of compression
 (\(P_0\) and \(T_0\), respectively), in addition to the composition of the
 reactant mixture. A single compression-delay-ignition sequence is
-referred to as an experiment or a run. Each experiment is repeated
-approximately 5 times at the same nominal initial conditions to ensure
-repeatability of the data, and this set of experiments is referred to in
-the following as a condition.
+referred to as an experiment or a run and a set of experiments at a given
+\(P_C\) and mixture composition is referred to as a condition.
 
 The dynamic pressure transducer outputs a charge signal that is converted to a
-voltage signal by a charge amplifier with a nominal output of \SI{0}{\V} prior
-to the start of compression. In addition, the output range of
-\SIrange{0}{10}{\V} is set by the operator to correspond to a particular
-pressure range by setting a ``scale factor''. Typical values for the scale
-factor range between \SIrange[range-phrase={ and }]{10}{100}{\bar\per\V}. The
+voltage signal by a charge amplifier with a nominal output of \SI{0}{\V}. In
+addition, the output range of \SIrange{0}{10}{\V} is set by the operator to
+correspond to a particular pressure range by setting a ``scale factor''. The
 voltage output from the charge amplifier is digitized by a hardware data
 acquisition system (DAQ) and recorded into a plain text file by a LabView
-Virtual Instrument. The voltage is sampled at a rate chosen by the operator,
-typically between \SIrange[range-phrase={ and }]{50}{100}{\kHz}. This provides
-sufficient resolution for events on the order of milliseconds; the typical
-ignition delay measured with this RCM approximately ranges from
-\SIrange{5}{100}{\ms}.
+Virtual Instrument. \Cref{fig:raw-voltage} shows a typical voltage trace
+measured from the RCM at UConn and demonstrates the typical noise in the signal,
+which requires filtering and further processing to produce a useful pressure
+trace.
 
 \begin{figure}[htbp]
     \begin{minipage}[t]{0.48\textwidth}
@@ -157,82 +150,41 @@ ignition delay measured with this RCM approximately ranges from
     \end{minipage}
 \end{figure}
 
-\Cref{fig:raw-voltage} shows a typical voltage trace measured from the RCM at
-UConn. Several features are apparent from this figure. First, the compression
-stroke takes approximately \SIrange{30}{40}{\ms} and approximately
-\SI{50}{\percent} of the pressure rise occurs in the last \SI{5}{\ms} of
-compression. Second, there is a slow pressure decrease after the EOC due to
-heat transfer from the reactants to the relatively colder chamber walls. Third,
-after some delay period there is a spike in the pressure corresponding to rapid
-heat release due to combustion. Finally, the signal can be somewhat noisy,
-requiring filtering and/or smoothing to produce a useful pressure trace.
-
-\subsection{Filtering and Smoothing}\label{filtering-and-smoothing}
-
 In the current version of UConnRCMPy \autocite{uconnrcmpy}, the voltage is
 filtered using a first-order Butterworth filter. The cutoff frequency of the
 filter is chosen automatically by a procedure described in the work of
-\textcite{Yu1999}. Briefly, this procedure applies low-pass filters of
-varying cutoff frequencies to the signal and calculates the root mean square
+\textcite{Yu1999,Duarte2014}. Briefly, this procedure applies low-pass filters
+of varying cutoff frequencies to the signal and calculates the root mean square
 residual between the filtered signal and the original signal.
 \Cref{fig:residuals} shows a typical plot of the residuals versus the cutoff
 frequency and demonstrates that the residuals are nearly linear for a range of
-cutoff frequencies. This range tends to be start at one-twentieth the Nyquist
+cutoff frequencies. This range tends to start at one-twentieth the Nyquist
 frequency but the end point is variable. Therefore, a series of linear
-regressions are performed as the end point is shifted from one-half the
-Nyquist frequency to one-tenth the Nyquist frequency. Then, the $y$-intercept
-of the regression with the highest coefficient of determination is used to
-choose the optimal cutoff frequency. The optimum cutoff frequency is chosen as
-the frequency at the intersection of the $y$-intercept and the residuals curve.
-In practice, this is accomplished by shifting the residuals curve down
-by the intercept and fitting a \python|UnivariateSpline| from the
-\python|scipy.interpolate| module \autocite{Jones2001} to the
-shifted residuals curve. The spline is fit such that it passes through every
-point in the residuals. The root of the spline is then where the intercept
-crosses the curve. The result of the filtering operation is shown on
-\cref{fig:raw-voltage}.
+regressions are performed as the end point is shifted from one-half the Nyquist
+frequency to one-tenth the Nyquist frequency. Then, the $y$-intercept of the
+regression with the highest coefficient of determination is used to choose the
+optimal cutoff frequency. The optimum cutoff frequency is chosen as the
+frequency at the intersection of the $y$-intercept and the residuals curve. The
+result of the filtering operation is shown on \cref{fig:raw-voltage}.
 
-\subsection{Offset Correction and Pressure Calculation}\label{offset-correction-and-pressure-calculation}
+After filtering, the voltage trace is converted to a pressure trace by
+correcting for the offset from the nominal initial volage of \SI{0}{\V} apparent
+in \mbox{\cref{fig:raw-voltage}b}, multiplying the voltage by the scale factor
+from the charge amplifier, and adding the initial pressure \(P_0\). The result
+is a vector of pressure values that must be further processed to determine the
+time of the EOC and the ignition delay.
 
-In general, the voltage trace can be converted to a pressure trace by
-%
-\begin{equation}
-    P(t) = F \cdot \overline{V}(t) + P_0
-\end{equation}
-%
-where \(\overline{V}(t)\) is the filtered and smoothed voltage trace and
-\(F\) is the scale factor from the charge amplifier. However, as can be
-seen in \cref{fig:raw-voltage}~b there is a small offset
-in the initial voltage relative to the nominal value of \SI{0}{\V}. To correct
-for this offset, it can be subtracted from the voltage trace
-%
-\begin{equation}
-    P(t) = F \cdot \left[\overline{V}(t) - \overline{V}(0)\right] + P_0
-\end{equation}
-%
-where \(\overline{V}(0)\) is the initial voltage of the filtered and
-smoothed signal. Assuming the noise in the signal has an equal
-probability of being above or below the mean voltage, choosing the
-initial point (i.e., \(\overline{V}(0)\)) to set the voltage offset is
-equivalent to choosing any other point prior to the start of
-compression. The result is a vector of pressure values that must be
-further processed to determine the time of the EOC and the ignition
-delay.
-
-\subsection{Finding the EOC}\label{finding-the-eoc}
-
-In the current version of UConnRCMPy \autocite{uconnrcmpy}, the EOC is
-determined by finding the local maximum of the pressure prior to
-ignition. This is done by searching backwards in time from the global
-maximum pressure in the pressure trace (typically, the global maximum of
-the pressure is due to ignition) until a minimum in the pressure is
-reached. The maximum of the pressure in points to the left of the minimum
-is defined as the EOC. The value of the pressure at the EOC, \(P_C\), is
+Once the pressure trace has been constructed, the EOC pressure and temperature
+and the ignition delay can be calculated. In the current version of UConnRCMPy
+\autocite{uconnrcmpy}, the time of the EOC is determined by finding the local
+maximum of the pressure prior to ignition. This is done by searching backwards
+in time from the global maximum pressure in the pressure trace (typically, the
+global maximum of the pressure is due to ignition) until a minimum in the
+pressure is reached. The maximum of the pressure in points to the left of the
+minimum is defined as the EOC. The value of the pressure at the EOC, \(P_C\), is
 recorded and the time at the EOC is taken to be \(t=\SI{0}{\s}\).
 
-\subsection{Calculating Ignition Delay}\label{calculating-ignition-delay}
-
-The ignition delay is determined as the time difference between the EOC
+Then, the ignition delay is determined as the time difference between the EOC
 and the point of ignition, defined as the inflection point in the pressure
 trace due to ignition. The inflection point is found by the maximum
 of the first derivative of the pressure with respect to time.
@@ -262,8 +214,6 @@ demonstrate the definition of the ignition delays.
     \label{fig:ign-delay-def}
 \end{figure}
 
-\subsection{Calculating the EOC Temperature}\label{calculating-the-eoc-temperature}
-
 The final parameter of interest presently is the EOC temperature,
 \(T_C\). This temperature is often used as the reference temperature
 when reporting ignition delays. In general, it is difficult to measure
@@ -286,26 +236,25 @@ internal energy and mass fraction of the species \(k\), and \(t\) is
 time. In UConnRCMPy, \cref{eq:first-law} is integrated by Cantera
 \autocite{cantera}.
 
-Integrating \cref{eq:first-law} requires knowledge of the
-volume of the reaction chamber as a function of time. To calculate the
-volume as a function of time, it is assumed that there is a core of gas
-in the reaction chamber that undergoes an isentropic, constant composition,
-compression \autocite{Lee1998}. The initial entropy of the gas mixture is
-calculated using Cantera \autocite{cantera}. Subsequently, the state of the
-mixture is fixed by using the entropy and measured pressure; from this
-information, the volume is calculated. The initial volume is
-arbitrarily taken to be \(V_0=\SI{1.0}{\m\cubed}\). The initial volume used
-in constructing the volume trace is arbitrary provided that the same
-value is used for the initial volume in the simulations described below.
-However, extensive quantities such as the total heat release during
-ignition cannot be compared to experimental values.
+Integrating \cref{eq:first-law} requires knowledge of the volume of the reaction
+chamber as a function of time. To calculate the volume as a function of time, it
+is assumed that there is a core of gas in the reaction chamber that undergoes an
+isentropic, constant composition compression \autocite{Lee1998}. The initial
+entropy of the gas mixture is calculated using Cantera \autocite{cantera}.
+Subsequently, the state of the mixture is fixed by using the entropy and
+measured pressure; from this information, the volume is calculated. The initial
+volume is arbitrarily taken to be \(V_0=\SI{1.0}{\m\cubed}\). The initial volume
+used in constructing the volume trace is arbitrary provided that the same value
+is used for the initial volume in the simulations described below. However,
+extensive quantities such as the total heat release during ignition cannot be
+compared to experimental values.
 
-Two simulations can be triggered by the user that solve \cref{eq:first-law}.
-In the first, the multiplier for all the reaction rates is
-set to zero, to simulate a constant composition (non-reactive) process.
-In the second, the reactions are allowed to proceed as normal. Only the
-non-reactive simulation is necessary to determine \(T_C\), which is
-defined as the simulated temperature at the EOC time.
+Two simulations can be triggered by the user that solve \cref{eq:first-law}. In
+the first, the multiplier for all the reaction rates is set to zero, to simulate
+a constant composition (non-reactive) process. In the second, the reactions are
+allowed to proceed as normal. Only the non-reactive simulation is necessary to
+determine \(T_C\), which is defined as the simulated temperature at the EOC
+time.
 
 When a reactive simulation is conducted, the user must compare the
 temperature traces from the two simulations to verify that the inclusion
@@ -318,8 +267,6 @@ critical to include reactions during the compression stroke when
 conducting simulations to compare a kinetic model to experimental
 results.
 
-\subsection{Simulating Post-EOC Processes}\label{simulating-post-eoc-processes}
-
 As can be seen in \cref{fig:ign-delay-def}, the pressure
 decreases after the EOC due to heat transfer from the higher temperature
 reactants to the reaction chamber walls. This process is specific to the
@@ -328,142 +275,67 @@ which the experiment was conducted. To include the effect of this heat
 transfer into simulations, a non-reactive experiment is conducted, where
 \(\text{O}_2\) in the oxidizer is replaced with \(\text{N}_2\).
 
-To apply the effect of the post-compression heat loss into the
-simulations, the reaction chamber is modeled as undergoing an adiabatic
-volume expansion after EOC. Since the post-compression time is modeled as an
-isentropic expansion, the same procedure is used as in the computation
-of \(T_C\) to compute a volume trace for the post-EOC time. The only
-difference is that the non-reactive pressure trace is used after the EOC
-instead of the reactive pressure trace. Once the volume trace is
-generated, it can be applied to a simulation by concatenating the volume
-trace of the compression stroke and the post-EOC volume trace together
-and following the procedure outlined in \cref{calculating-the-eoc-temperature}.
-This procedure has been validated experimentally by measuring the temperature
-in the reaction chamber during and after the compression stroke. The
-temperature of the reactants was found to be within $\pm\sim $\SI{5}{\K} of the
-simulated temperature \autocite{Das2012a,Uddi2012}.
+To apply the effect of the post-compression heat loss into the simulations, the
+reaction chamber is modeled as undergoing an adiabatic volume expansion after
+EOC. Since the post-compression time is modeled as an isentropic expansion, the
+same procedure is used as in the computation of \(T_C\) to compute a volume
+trace for the post-EOC time. The only difference is that the non-reactive
+pressure trace is used after the EOC instead of the reactive pressure trace.
+This procedure has been validated experimentally by measuring the temperature in
+the reaction chamber during and after the compression stroke. The temperature of
+the reactants was found to be within $\pm\sim $\SI{5}{\K} of the simulated
+temperature \autocite{Das2012a,Uddi2012}.
 
-\section{Implementation of UConnRCMPy}\label{implementation-of-uconnrcmpy}
+\section{Implementation and Usage of UConnRCMPy}\label{implementation-and-usage-of-uconnrcmpy}
 
-UConnRCMPy is constructed in a hierarchical manner. The main user
-interface to UConnRCMPy is through the \python|Condition| class, the
-highest level of data representation. The \python|Condition| class
-contains all of the information pertaining to the experiments at a given
-condition. The intended use of this class is in an interactive Python
-interpreter (the author prefers the Jupyter Notebook with an IPython
-kernel \autocite{Perez2007}). \python|Condition| also contains all the
-methods that make up the user interface:
-
-\begin{itemize}
-\item
-  \python|add_experiment()|
-\item
-  \python|create_volume_trace()|
-\item
-  \python|compare_to_sim()|
-\end{itemize}
-
-The usage of these methods will be described in detail in the
-\cref{usage-example} section. In general, the user will
-conduct several experiments and, using the \python|add_experiment()|
-method, will trigger UConnRCMPy to create instances of the
-\python|Experiment| class and extract the ignition delay.
-
-All of the information about a particular experimental run is stored in
-the \python|Experiment| class. Information about the signal
-measured from the DAQ is stored in an instance of the
-\python|VoltageTrace| class, which reads the signal from a
-tab-delimited text file. When an instance of \python|Experiment|
-is initialized, it automatically creates an instance of
-\python|VoltageTrace| followed by an instance of
-\python|ExperimentalPressureTrace|. The pressure trace from the
-latter is processed to extract the ignition delay(s) and \(P_C\).
-
-When all the experiments are conducted and processed,
-\python|create_volume_trace()| further processes the experiments to
-create the volume trace necessary to run the simulations to determine
-\(T_C\). After generation, \python|create_volume_trace()| writes
-the volume trace out to a CSV file so that the volume trace can be used in
-other software. The reactive pressure trace is also written to a tab-separated
-file. Before writing, the volume and pressure traces are both
-downsampled by a factor of 5. This reduces the computational time of a
-simulation and does not have any effect on the simulated results.
-
-The final step is to use the volume trace in a simulation to determine
-\(T_C\). To begin the simulations, the user calls the
-\python|compare_to_sim()| method of the
-\python|Condition|.
-
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=0.75\textwidth]{figures/flowchart.pdf}
-    \caption{Flowchart of information in \mbox{UConnRCMPy}}
-    \label{fig:flowchart}
-\end{figure}
-
-The general flow of the user interaction with UConnRCMPy is shown in
-\cref{fig:flowchart}. The Inputs are required input from the
-user, while the User Interface are classes and functions called by the
-user during processing.
-
-UConnRCMPy is documented using standard Python docstrings for functions
-and classes. The documentation is converted to HTML files by the Sphinx
-documentation generator \autocite{Brandl2016}. The format of the
-docstrings conforms to the NumPy docstring format so that the autodoc
-module of Sphinx can be used. The documentation is available on the web
-at \href{https://bryanwweber.github.io/UConnRCMPy/}.
-
-\section{Usage Example}\label{usage-example}
-
-The following example assumes the user is running a Jupyter Notebook with an
-IPython kernel. These experiments were conducted with mixtures of propane,
-oxygen, and nitrogen \autocite{Dames2016}. The CTI file necessary to run this
-example can be found in the Supplementary Material of the work by
-\textcite{Dames2016}. Then, the composition of the mixture under consideration
-must be added to the \python|initial_state| parameter of the
-\python|ideal_gas()| method:
-
-\begin{minted}{python}
-ideal_gas(
-    name='gas', elements=..., species=..., reactions='all',
-    initial_state=state(temperature=300.0, pressure=OneAtm,
-        mole_fractions='C3H8:0.0403,O2:0.1008,N2:0.8589')))
-\end{minted}
-
-Ellipses indicate input that was truncated to save space; the truncated
-input is present in the file available with the work of \textcite{Dames2016}. The
-initial temperature and pressure are arbitrary, since those are set
-based on information stored in the filename of the experiment, but the
-\python|mole_fractions| must be set to the appropriate values. The
-condition in this example is for a fuel rich mixture, with a target
-\(P_C\) of 30 bar.
-
-Once the thermodynamic information is set, the user initializes the
-\python|Condition|, which has two optional arguments. The first is
-\python|cti_file|, which can be assigned a string with the file name
-of the CTI file with thermodynamic information. The default is a file named
-\python|species.cti| in the current directory. The second argument,
-\python|plotting|, controls whether plots are generated as analysis
-is conducted. The default value of this argument is \python|True|.
-
-After initializing the \python|Condition|, the user conducts a
-reactive experiment with the RCM and adds the experiment to the
-\python|Condition| using the \python|add_experiment()|
-method. As each experiment is processed by UConnRCMPy, the information from
-that run is added to the system clipboard for pasting into some spreadsheet
-software. In the current version, the information copied is the time of day of
-the experiment, the initial pressure, the initial temperature, the pressure at
-the EOC, the overall and first stage ignition delays, an estimate of the EOC
-temperature, some information about the compression ratio of the reactor, and
-the filter frequnecy used.
+UConnRCMPy is constructed in a hierarchical manner. The main user interface to
+UConnRCMPy is through the \python|Condition| class, the highest level of data
+representation. The \python|Condition| class contains all of the information
+pertaining to the experiments at a given condition. The intended use of this
+class is in an interactive Python interpreter (the author prefers the Jupyter
+Notebook with an IPython kernel \autocite{Perez2007}). First, the user creates
+an instance of the \python|Condition| class.
 
 \begin{minted}{python}
 from uconnrcmpy import Condition
 %matplotlib qt5
 
-cond_00_in_02_mm = Condition(cti_file='./species.cti')
+cond_00_02 = Condition(cti_file='./species.cti')
+\end{minted}
+
+The \python|cti_file| argument to \python|Condition| must point to a file in the
+CTI format that contains the thermodynamic and reaction information for the
+species in the mixture. The experiments in the following example were conducted
+with mixtures of propane, oxygen, and nitrogen \autocite{Dames2016}. The CTI
+file necessary to run this example can be found in the Supplementary Material of
+the work by \textcite{Dames2016}. Then, the composition of the mixture under
+consideration must be added to the \python|initial_state| parameter of the
+\python|ideal_gas()| function in the CTI file:
+
+\begin{minted}{python}
+ideal_gas(
+    name='gas', elements=..., species=..., reactions='all',
+    initial_state=state(mole_fractions='C3H8:0.0403,O2:0.1008,N2:0.8589'))
+\end{minted}
+
+Ellipses indicate input that was truncated to save space; the truncated input is
+present in the file available with the work of \textcite{Dames2016}. The
+\python|mole_fractions| must be set to the appropriate values. The condition in
+this example is for a fuel rich mixture, with a target \(P_C\) of 30 bar.
+
+After initializing the \python|Condition|, the user conducts a reactive
+experiment with the RCM and adds the experiment to the \python|Condition| using
+the \python|add_experiment()| method. As each experiment is processed by
+UConnRCMPy, the information from that run is added to the system clipboard for
+pasting into some spreadsheet software. In the current version, the information
+copied is the time of day of the experiment, the initial pressure, the initial
+temperature, the pressure at the EOC, the overall and first stage ignition
+delays, an estimate of the EOC temperature, some information about the
+compression ratio of the reactor, and the filter frequnecy used.
+
+\begin{minted}{python}
 # Conduct reactive experiment #1 on the RCM
-cond_00_in_02_mm.add_experiment('00_in_02_mm_373K-1282t-100x-19-Jul-15-1633.txt')
+cond_00_02.add_experiment('00_in_02_mm_373K-1282t-100x-19-Jul-15-1633.txt')
 # ... add other reactive experiments
 \end{minted}
 
@@ -480,7 +352,7 @@ attribute of the \python|Condition| instance. For this case, the
 reference experiment is the run that took place at 16:33:
 
 \begin{minted}{python}
-cond_00_in_02_mm.reactive_file = '00_in_02_mm_373K-1282t-100x-19-Jul-15-1633.txt'
+cond_00_02.reactive_file = '00_in_02_mm_373K-1282t-100x-19-Jul-15-1633.txt'
 \end{minted}
 
 If the user does not specify the \python|reactive_file| attribute,
@@ -493,7 +365,7 @@ determines whether the experiment is reactive or non-reactive.
 
 \begin{minted}{python}
 # Conduct non-reactive experiment #1 on the RCM
-cond_00_in_02_mm.add_experiment('NR_00_in_02_mm_373K-1278t-100x-19-Jul-15-1652.txt')
+cond_00_02.add_experiment('NR_00_in_02_mm_373K-1278t-100x-19-Jul-15-1652.txt')
 \end{minted}
 
 UConnRCMPy determines that this is a non-reactive experiment and
@@ -508,7 +380,7 @@ pressure traces, the user sets the \python|nonreactive_file| attribute of the
 \python|Condition| instance.
 
 \begin{minted}{python}
-cond_00_in_02_mm.nonreactive_file = 'NR_00_in_02_mm_373K-1278t-100x-19-Jul-15-1652.txt'
+cond_00_02.nonreactive_file = 'NR_00_in_02_mm_373K-1278t-100x-19-Jul-15-1652.txt'
 \end{minted}
 
 Once the non-reactive case is chosen, the \python|create_volume_trace()| method
@@ -516,30 +388,45 @@ can be run. This method requires three attributes to be set on the
 \python|Condition| instance: \python|nonreactive_end_time|,
 \python|reactive_end_time|, and \python|reactive_compression_time|. The value of
 \python|nonreactive_end_time| controls the end time for volume trace generation,
-and is typically set to \SI{400}{\ms}. The value of \python|reactive_end_time|
-controls the length of the pressure trace stored in the output file, and is
-typically chosen to be a few \si{\ms} longer than the ignition delay time.
-Finally, the \python|reactive_compression_time| is the length of the compression
-stroke. All of the values must be supplied in units of milliseconds. After
-generating the volume trace, \python|create_volume_trace()| writes the
-\python|volume.csv| file, the pressure trace file, and file called
-\python|volume-trace.yaml|, which contains the values that were set for each
-attribute.
+the value of \python|reactive_end_time| controls the length of the pressure
+trace stored in the output file, and the \python|reactive_compression_time| is
+the length of the compression stroke. All of the values must be supplied in
+units of milliseconds. After generating the volume trace,
+\python|create_volume_trace()| writes the \python|volume.csv| file, the pressure
+trace file, and a file called \python|volume-trace.yaml|, which contains the
+values that were set for each attribute.
 
 The final step to conduct the simulations to calculate \(T_C\) and the simulated
 ignition delay. This is done by the user by running the
 \python|compare_to_sim()| function. This function takes two optional arguments,
 \python|run_reactive| and \python|run_nonreactive|. These determine which
-type(s) of simulation(s) should be conducted; by default,
-\python|run_reactive| is \python|False| and \python|run_nonreactive| is
-\python|True| because the reactive simulations may take substantial time
-($\sim\SI{5}{\min}$). There is no restriction on combinations of values for the
-arguments; either or both may be \python|True| or \python|False|.
+type(s) of simulation(s) should be conducted.
 
 \begin{minted}{python}
-cond_00_in_02_mm.create_volume_trace()
-cond_00_in_02_mm.compare_to_sim(run_reactive=True, run_nonreactive=True)
+cond_00_02.create_volume_trace()
+cond_00_02.compare_to_sim(run_reactive=True, run_nonreactive=True)
 \end{minted}
+
+% The general flow of the user interaction with UConnRCMPy is shown in
+% \cref{fig:flowchart}. The Inputs are required input from the
+% user, while the User Interface are classes and functions called by the
+% user during processing.
+
+UConnRCMPy is documented using standard Python docstrings for functions and
+classes. The documentation is converted to HTML files by the Sphinx
+documentation generator \autocite{Brandl2016}. The format of the docstrings
+conforms to the NumPy docstring format so that the autodoc module of Sphinx can
+be used. The documentation is available on the web at
+\href{https://bryanwweber.github.io/UConnRCMPy/}. UConnRCMPy also relies heavily
+on functionality from the NumPy \autocite{vanderWalt2011}, SciPy
+\autocite{Jones2001}, and Matplotlib \autocite{Hunter2007} Python packages.
+
+% \begin{figure}[htbp]
+%     \centering
+%     \includegraphics[width=0.75\textwidth]{figures/flowchart.pdf}
+%     \caption{Flowchart of information in \mbox{UConnRCMPy}}
+%     \label{fig:flowchart}
+% \end{figure}
 
 \section{Conclusions and Future Work}\label{conclusions-and-future-work}
 
@@ -553,7 +440,9 @@ any RCM experiments where the ignition delay is the primary output.
 Future plans for UConnRCMPy include the development of a robust test suite to
 prevent regressions and document correct usage of the framework, as well as the
 development of a plugin architechture to allow easy implementation of
-user-defined analysis features.
+user-defined analysis features. Other issues and directions are listed in the
+Issue page of the GitHub repository
+\href{https://github.com/bryanwweber/uconnrcmpy/issues/}.
 
 \section{Acknowledgements}\label{acknowledgements}
 
