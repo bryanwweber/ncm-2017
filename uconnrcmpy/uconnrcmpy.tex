@@ -42,18 +42,16 @@ CT, USA}
 \begin{abstract} % not to exceed 200 words
     The ignition delay of a fuel/air mixture is an important quantity in
     designing combustion devices, and these data are also used to validate
-    computational kinetic models for combustion. One of the typical
-    experimental devices used to measure the ignition delay is called a
-    Rapid Compression Machine (RCM). This paper presents UConnRCMPy, an
-    open-source Python package to process experimental data from the RCM at
-    the University of Connecticut. Given an experimental measurement,
-    UConnRCMPy computes the thermodynamic conditions in the reaction chamber
-    of the RCM during an experiment along with the ignition delay.
-    UConnRCMPy relies on several packages from the SciPy stack and the
-    broader scientific Python community. UConnRCMPy implements an extensible
-    framework, so that alternative experimental data formats can be
-    incorporated easily. In this way, UConnRCMPy improves the consistency of
-    RCM data processing and enables reproducible analysis of the data.
+    computational kinetic models for combustion. One of the typical experimental
+    devices used to measure the ignition delay is called a Rapid Compression
+    Machine (RCM). This paper presents UConnRCMPy, an open-source Python package
+    to process experimental data from the RCM at the University of Connecticut.
+    Given an experimental measurement, UConnRCMPy computes the thermodynamic
+    conditions in the reaction chamber of the RCM during an experiment along
+    with the ignition delay. UConnRCMPy implements an extensible framework, so
+    that alternative experimental data formats can be incorporated easily. In
+    this way, UConnRCMPy improves the consistency of RCM data processing and
+    enables reproducible analysis of the data.
 \end{abstract}
 
 % (Provide 2-4 keywords describing your research. Only abbreviations firmly
@@ -65,11 +63,10 @@ CT, USA}
 
 \section{Introduction}\label{introduction}
 
-Producing research outputs that can be reproduced by future scientists is one of
-the fundamental tenents of our present scientific methodology. In recent years,
-there has been a surge in interest in ensuring that research outputs are
-reproducible \autocite{NatureEds2016}. Recognizing that the code used to process
-experimental data is an important part of the chain, this paper presents the
+In recent years, there has been a surge in interest in ensuring that research
+outputs are reproducible across time and personnel \autocite{NatureEds2016}.
+Recognizing that the code used to process experimental data is an important part
+of the chain from observation to result and publication, this paper presents the
 design and operation of a software package to process the pressure data
 collected from Rapid Compression Machines (RCMs). Our package, called UConnRCMPy
 \autocite{uconnrcmpy}, is designed to analyze the data acquired from the RCM at
@@ -385,19 +382,23 @@ cond_00_02.nonreactive_file = 'NR_00_in_02_mm_373K-1278t-100x-19-Jul-15-1652.txt
 
 Once the non-reactive case is chosen, the \python|create_volume_trace()| method
 can be run. This method requires three attributes to be set on the
-\python|Condition| instance: \python|nonreactive_end_time|,
-\python|reactive_end_time|, and \python|reactive_compression_time|. The value of
-\python|nonreactive_end_time| controls the end time for volume trace generation,
-the value of \python|reactive_end_time| controls the length of the pressure
-trace stored in the output file, and the \python|reactive_compression_time| is
-the length of the compression stroke. All of the values must be supplied in
-units of milliseconds. After generating the volume trace,
-\python|create_volume_trace()| writes the \python|volume.csv| file, the pressure
-trace file, and a file called \python|volume-trace.yaml|, which contains the
-values that were set for each attribute.
+\python|Condition| instance: \python|nonreactive_end_time| which controls the
+end time for volume trace generation, \python|reactive_end_time| which controls
+the length of the pressure trace stored in the output file, and
+\python|reactive_compression_time| which is the length of the compression
+stroke. All of the values must be supplied in units of milliseconds.
 
-The final step to conduct the simulations to calculate \(T_C\) and the simulated
-ignition delay. This is done by the user by running the
+\begin{minted}{python}
+    cond_00_02.nonreactive_end_time = 400
+    cond_00_02.reactive_end_time = 80
+    cond_00_02.reactive_compression_time = 36
+\end{minted}
+
+After generating the volume trace, \python|create_volume_trace()| writes the
+\python|volume.csv| file, the pressure trace file, and a file called
+\python|volume-trace.yaml|, which contains the values that were set for each
+attribute. The final step to conduct the simulations to calculate \(T_C\) and
+the simulated ignition delay. This is done by the user by running the
 \python|compare_to_sim()| function. This function takes two optional arguments,
 \python|run_reactive| and \python|run_nonreactive|. These determine which
 type(s) of simulation(s) should be conducted.
@@ -417,7 +418,7 @@ classes. The documentation is converted to HTML files by the Sphinx
 documentation generator \autocite{Brandl2016}. The format of the docstrings
 conforms to the NumPy docstring format so that the autodoc module of Sphinx can
 be used. The documentation is available on the web at
-\href{https://bryanwweber.github.io/UConnRCMPy/}. UConnRCMPy also relies heavily
+\url{https://bryanwweber.github.io/UConnRCMPy/}. UConnRCMPy also relies heavily
 on functionality from the NumPy \autocite{vanderWalt2011}, SciPy
 \autocite{Jones2001}, and Matplotlib \autocite{Hunter2007} Python packages.
 
@@ -442,7 +443,7 @@ prevent regressions and document correct usage of the framework, as well as the
 development of a plugin architechture to allow easy implementation of
 user-defined analysis features. Other issues and directions are listed in the
 Issue page of the GitHub repository
-\href{https://github.com/bryanwweber/uconnrcmpy/issues/}.
+\url{https://github.com/bryanwweber/uconnrcmpy/issues/}.
 
 \section{Acknowledgements}\label{acknowledgements}
 
