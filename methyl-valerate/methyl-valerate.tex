@@ -1,0 +1,323 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% This work is licensed under the Creative Commons Attribution 4.0
+% International License. To view a copy of this license, visit
+% http://creativecommons.org/licenses/by/4.0/.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[12pt]{../ussci}
+
+\usepackage{enumitem}
+\setlist{noitemsep}
+
+\usepackage[version=4]{mhchem}
+\usepackage{siunitx}
+\sisetup{separate-uncertainty=true}
+
+\usepackage{graphicx}
+\usepackage{pgf}
+\usepgflibrary{fpu}
+
+\usepackage[tableposition=top]{caption}
+\usepackage{booktabs}
+\usepackage{mathtools}
+\usepackage{microtype}
+
+\newcommand*{\logten}{\mathop{\log_{10}}}
+
+% Fix missing mu character from a reference
+\usepackage{textcomp}
+\DeclareUnicodeCharacter{2212}{\textendash}
+% \DeclareUnicodeCharacter{3BC}{\textmu}
+% \DeclareUnicodeCharacter{39C}{\textmu}
+
+\usepackage[capitalize]{cleveref}
+%======================================================================
+\addbibresource{methyl-valerate.bib}
+%======================================================================
+\newcommand\papertopic{Reaction Kinetics}
+%======================================================================
+\DeclareSIUnit\torr{torr}
+
+\title{ Autoignition of Methyl Pentanoate at Low to Intermediate Temperatures and Elevated Pressures in a Rapid Compression Machine }
+
+\author[1*]{Bryan W.\ Weber}
+\author[1]{Justin Bunnell}
+\author[2]{Kamal Kumar}
+\author[1]{Chih-Jen Sung}
+\affil[1]{Department of Mechanical Engineering, University of Connecticut, Storrs, CT, USA}
+\affil[2]{Department of Mechanical Engineering, University of Idaho, Moscow, ID, USA}
+\affil[*]{Corresponding Author: \email{bryan.weber@uconn.edu}}
+
+\begin{document}
+\maketitle
+
+%====================================================================
+\begin{abstract} % not to exceed 200 words
+    Methyl valerate (\ce{C6H12O2}, methyl pentanoate) is a methyl ester and a
+    relevant surrogate component for biodiesel. In this work, we present
+    ignition delays of methyl valerate measured using a rapid compression
+    machine at a range of engine-relevant temperature, pressure, and equivalence
+    ratio conditions. The conditions we have studied include equivalence ratios
+    from \numrange{0.25}{2.0}, temperatures between \SIlist{600;1100}{\K}, and
+    pressures of \SIlist{15;30}{\bar}. The ignition delay data demonstrate a
+    negative temperature coefficient region and two-stage ignition response in
+    the temperature range of \SIrange[range-phrase={--}]{700}{800}{\K} for the
+    equivalence ratios of \numlist{1.0;2.0} and pressure of \SI{30}{\bar}. In
+    addition, the experimental ignition delay data are compared with simulations
+    using an existing chemical kinetic model from the literature. The
+    simulations with the literature model underpredict the data by factors
+    between \numlist{2;10} over the entire range of the experimental data. To help
+    determine the possible reasons for the discrepancy between simulations and
+    experiments, a new chemical kinetic model is developed using the Reaction
+    Mechanism Generator (RMG) software. The agreement between the experimental
+    data and the RMG model is improved but still not satisfactory. Directions
+    for future improvement of the methyl valerate models are discussed.
+\end{abstract}
+
+% (Provide 2-4 keywords describing your research. Only abbreviations firmly
+% established in the field may be used. These keywords will be used for
+% sessioning/indexing purposes.)
+\begin{keyword}
+    chemical kinetics\sep rapid compression machine\sep autoignition\sep methyl valerate
+\end{keyword}
+
+\section{Introduction}\label{sec:introduction}
+
+For transportation applications, biodiesel is an important constituent in
+improving environmental friendliness of fuels, due to its renewability when
+produced from sustainable agricultural crops and its ability to reduce emissions
+relative to conventionally fueled engines \autocite{Hoekman2012}. A recent review paper summarizes the recent work on methyl esters relevant to
+biodiesel combustion \autocite{Coniglio2013}. Autoignition of methyl butanoate
+(MB, \ce{C5H10O2}) has been well-studied in both shock tube and rapid
+compression machine experiments, and readers are referred to the review of
+\textcite{Coniglio2013} for further details. The prevalance of MB data in the
+literature is largely due to the early identification of MB as a potential
+surrogate fuel for biodiesel \autocite{Fisher2000}. However, the
+experiments have shown that MB may not be an appropriate surrogate for
+biodiesel, due to its lack of NTC behavior, a requirement for a suitable
+biodiesel surrogate \autocite{Coniglio2013}.
+
+Larger methyl esters such as methyl valerate (MV, \ce{C6H12O2}, methyl
+pentanoate) have also been studied as possible biodiesel surrogates.
+\textcite{Hadj-Ali2009} used a rapid compression machine to study the
+autoignition of several methyl esters including MV. Although MV exhibited
+two-stage ignition in this study, little additional research has been done on
+its oxidation. \textcite{Korobeinichev2015} studied MV in premixed laminar
+flames and extended a detailed high temperature chemical kinetic mechanism to
+include the two fuels. \textcite{Dmitriev2015} added MV to n-heptane/toluene
+fuel blends to determine the resulting intermediate species in premixed flames
+using a flat burner at \SI{1}{atm} and an equivalence ratio of 1.75. The
+addition of MV helped reduce soot forming intermediates including benzene,
+cyclopentadienyl, acetylene, propargyl, and vinylacetylene. \textcite{Hayes2009}
+computationally examined the peroxy radical isomerization reactions for MV to
+better understand the low temperature reaction pathways. \textcite{Dievart2013}
+used diffusion flames in the counterflow configuration to determine extinction
+limits for a number of methyl esters, and validated several kinetic models with
+the experimental data
+
+This work provides additional data for the autoignition of MV. Data is collected
+in a rapid compression machine (RCM) under engine relevant conditions spanning
+from \SIrange{15}{30}{\bar}, equivalence ratios from \numrange{0.25}{2.0}, and
+temperatures from \SIrange{682}{1048}{\K}. The NTC region of MV is mapped out to
+provide additional information on the fidelity of using MV as a biodiesel
+surrogate.
+
+\section{Experimental Methods}\label{sec:experimental-methods}
+
+The RCM used in this study is a single piston arrangement and is pneumatically
+driven and hydraulically stopped. The device has been described in detail
+previously \autocite{Mittal2007a} and will be described here briefly for
+reference. The end of compression (EOC) temperature and pressure (\(T_C\) and
+\(P_C\) respectively), are independently changed by varying the overall
+compression ratio, initial pressure, and initial temperature of the experiments. The primary diagnostic on the RCM is the in-cylinder pressure. The pressure data
+is processed by a Python package called UConnRCMPy
+\autocite{uconnrcmpy,Weber2016a}, which calculates \(P_C\), \(T_C\), and the ignition
+delay(s). For certain EOC states, the mixture will undergo two stages of
+ignition. In these cases, the first stage ignition delay \((\tau_1))\) is
+defined as the time from the EOC \((t=\SI{0}{\s})\) until the first peak in the
+time derivative of the pressure trace, while the overall ignition delay
+\((\tau)\) is defined as the time from the EOC until the global maximum in the
+time derivative of the pressure trace, as shown in \cref{fig:ign-delay-def}. The
+time of the EOC is defined as the maximum of the pressure trace prior to the
+start of ignition. For the EOC states where ignition occurs in a single stage,
+only the overall ignition delay is defined.
+
+\begin{figure}[htbp]
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        \resizebox{\linewidth}{!}{\input{figures/ignition_delay_definition.pgf}}
+        \caption{Definition of the ignition delays used in this work. The
+        experiment in this figure was conducted for a \(\phi=2.0\) mixture with
+        \mbox{\(\ce{Ar}:\ce{N2}=0.5\)}, \(P_0=\SI{0.7694}{\bar}\),
+        \(T_0=\SI{373}{\K}\), \(P_C=\SI{14.94}{\bar}\), \(T_C=\SI{723}{\K}\),
+        \(\tau=\SI{27.44\pm0.99}{\ms}\), \(\tau_1=\SI{16.57\pm0.48}{\ms}\).}
+        \label{fig:ign-delay-def}
+    \end{minipage}\hfill%
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        \resizebox{\linewidth}{!}{\input{figures/vapor_pressure.pgf}}
+        \caption{Vapor pressure of MV as a function of temperature, plotted
+        using the Antoine equation, \cref{eq:antoine}, with \(A=6.4030\), \(B=1528.69\), and \(C=52.881\).}
+        \label{fig:vapor-pressure}
+    \end{minipage}
+\end{figure}
+
+Each experimental condition is repeated at least five times to ensure
+repeatability of the data. Vertical error bars shown on subsequent plots of the
+ignition delay represent twice the standard deviation of the experiments at a
+particular condition; if no error bars are visible, the error bars are
+approximately the same vertical dimension as the data point symbol.
+
+In addition to the reactive experiments, non-reactive experiments are conducted
+to determine the influence of machine-specific behavior on the experimental
+conditions and permit the calculation of the EOC temperature via the isentropic
+relations between pressure and temperature \autocite{Lee1998}. The EOC
+temperature is calculated by the procedure described in
+\cref{sec:computational-methods}. The uncertainty in the estimation of \(T_C\)
+is estimated using the Monte Carlo procedure of \textcite{Weber2015} at
+\SI{\pm1}{\percent} and this uncertainty is shown by horizontal error bars in
+plots of the ignition delay.
+
+The mixtures considered in this study are shown in \cref{tab:mixtures}. Four
+equivalence ratios of MV in ``air'' are considered. The ratio of
+\(\ce{Ar}:\ce{N2}\) in the oxidizer is varied to adjust the temperatures reached
+at the EOC for a given equivalence ratio. Two \(P_C\) conditions are studied in
+this work, \SIlist{15;30}{\bar}; for the \(\phi=2.0\) condition, only
+\SI{15}{\bar} is considered because we could not achieve \(T_C\) values low
+enough that the ignition was long enough to be measured in our apparatus (the
+typical lower limit of ignition delay on the present RCM is approximately
+\SI{5}{\ms}).
+
+\begin{table}[htbp]
+    \centering
+    \caption{Mixtures considered in this work}
+    \begin{tabular}{cccccc}
+        \toprule
+        \(\phi\) & \multicolumn{4}{c}{Mole Fraction (purity)} & Ar/N2 \\
+        \cmidrule{2-5}
+         & MV (?) & O2 () & Ar () & N2 () &  \\
+        0.25 & 0.0065 & 0.2087 & 0.7848 & 0.0000 & 1.0 \\
+        0.5 & 0.0130 & 0.2074 & 0.7797 & 0.0000 & 1.0 \\
+        1.0 & 0.0256 & 0.2047 & 0.7697 & 0.0000 & 1.0 \\
+        1.0 & 0.0256 & 0.2047 & 0.3849 & 0.3848 & 0.5 \\
+        2.0 & 0.0499 & 0.1996 & 0.0000 & 0.7505 & 0.0 \\
+        2.0 & 0.0499 & 0.1996 & 0.3752 & 0.3753 & 0.5 \\
+        \bottomrule
+    \end{tabular}
+    \label{tab:mixtures}
+\end{table}
+
+Mixtures are prepared in stainless steel mixing tanks. The proportions of
+reactants in the mixture are determined by specifying the absolute mass of the
+fuel, the equivalence ratio, and the ratio of \(\ce{Ar}:\ce{N2}\) in the
+oxidizer. Since MV is a liquid with a relatively small vapor pressure at room
+temperature and pressure, it is injected into the mixing tank through a septum.
+Proportions of \ce{O2}, \ce{Ar}, and \ce{N2} are added manometrically at room
+temperature.
+
+The RCM is equipped with heaters to control the initial temperature of the
+mixture. After filling in the components to the mixing tanks, the heaters are
+switched on and the system is allowed \SI{1.5}{\hour} to come to steady state.
+The mixing tanks are also equipped with magnetic stir bars to the reactants are
+well mixed for the duration of the experiments.
+
+The initial temperature is chosen such that the vapor pressure of the fuel at
+the initial temperature is at least twice the partial pressure of the fuel in
+the mixing tank. The Antoine equation
+%
+\begin{equation}\label{eq:antoine}
+    \logten{P_{\text{sat}}} = A - \frac{B}{T - C}
+\end{equation}
+%
+is used to model the vapor pressure of MV as a function of temperature, where
+\(A\), \(B\), and \(C\) are substance-specific coefficients and
+\(P_{\text{sat}}\) is the vapor pressure. The coefficients in \cref{eq:antoine}
+are determined by least squares fitting of the data of \textcite{Ortega2003},
+\textcite{vanGenderen2002}, and \textcite{Verevkin2008} using the
+\verb|curve_fit()| function of SciPy \autocite{Jones2001} version 0.18.1.
+\Cref{fig:vapor-pressure} shows that the coefficients fit with this procedure
+give good agreement with the experimental data.
+
+% \begin{table}
+%     \centering
+%     \caption{Antoine Equation coefficients computed in this work and from the
+%     literature. The $2\sigma$ confidence interval is estimated by taking the
+%     square root of the diagonals of the covariance matrix returned from
+%     \texttt{curve\_fit()}}
+%     \label{tab:antoine}
+%     \begin{tabular}{cccccc}
+%         \toprule
+%         & $A$ & $B$ & $C$ & $T_{\text{min}}$, \si{\K} & $T_{\text{max}}$, \si{\K} \\
+%         \midrule
+%         This Work & 6.4030 & 1528.69 & 52.881 & 274.9 & 417.18 \\
+%         $2\sigma$ Confidence Interval & 0.0919 & 53.47 & 4.934 & --- & --- \\
+%         \textcite{Ortega2003} & 6.23175 & 1429.00 & 62.30 & 364.75 & 417.18 \\
+%         \textcite{Camacho2007} & 5.9644 & 1281.06 & 75.94 & 281 & 547 \\
+%         \textcite{Stephenson1987} & 6.62646 & 1658.4 & 42.09 & 297 & 411 \\
+%         \bottomrule
+%     \end{tabular}
+% \end{table}
+
+\section{Computational Methods}\label{sec:computational-methods}
+\subsection{Experimental Modeling}\label{sec:experimental-modeling}
+
+The Python 3.5 interface of Cantera \autocite{cantera} version 2.3.0 is used for
+all simulations in this work. Detailed descriptions of the use of Cantera for
+these simulations can be found in the work of \textcite{Weber2016a} and
+\textcite{Dames2016}; a brief overview is given here. As mentioned in
+\cref{sec:experimental-methods}, non-reactive experiments are conducted to
+characterize the machine-specific effects on the experimental conditions in the
+RCM. This pressure trace is used to compute a volume trace by assuming that the
+reactants undergo a reversible, adiabatic, constant composition (i.e.,
+isentropic) compression during the compression stroke and an isentropic
+expansion after the EOC. The volume trace is applied to a simulation conducted
+in an \verb|IdealGasReactor| in Cantera \autocite{cantera} using the CVODES
+solver from the SUNDIALS suite \autocite{Hindmarsh2005}. The ignition delay from
+the simulations is defined in the same manner as in the experiments. The time
+derivative of the pressure in the simulations was computed by second order
+Lagrange polynomials, as discussed by \textcite{Chapra2010}.
+
+To the best of our knowledge, there are three mechanisms for MV combustion
+available in the literature. The first two, by \textcite{Dmitriev2015} and
+\textcite{Korobeinichev2015} were developed to simulate flames, and do not
+include the low-temperature chemistry necessary to simulate the conditions in
+these experiments. The third model was developed by \textcite{Dievart2013} and
+includes low-temperature chemistry of MV. To use this mechanism in Cantera, we
+made a number of modifications, including removing duplicate species from the
+thermodynamic database and removing the excited \ce{OH*} and \ce{CH*} chemistry,
+which is not supported by Cantera 2.3.0. For most of the duplicate species in
+the thermodynamic database, the thermodynamic data is identical, so one copy of
+the duplicate species is simply removed from the database. However, some species
+are not exact duplicates. For these species, it is not clear from the
+thermodynamic database file which data set should be preferred and the default
+of Cantera (and CHEMKIN) to choose the first instance of a duplicate species is
+used. The detailed \textcite{Dievart2013} model includes 1103 species and 7557
+reactions.
+
+\subsection{Reaction Mechanism Generator}\label{sec:reaction-mechanism-generator}
+
+In addition to using mechanisms from the literature, we investigate the use of
+an automatic mechanism generator, the open-source Reaction Mechanism Generator
+(RMG) \autocite{Gao2016a} version 2.0.0. The Python version of RMG is used,
+which requires Python 2.7, and version 2.0.0 of the RMG database is used. The
+final RMG model contains 483 species and 19990 reactions. Note that the number
+of species is much lower than the \textcite{Dievart2013} model because the RMG
+model focuses on only one fuel (MV), but the number of reactions is
+substantially higher. One of our intentions is to compare the ability of these
+models to predict the ignition delay of MV under low-to-intermediate temperature
+conditions.
+
+\begin{figure}[htbp]
+    \centering
+    \input{figures/ignition-delays.pgf}
+    \caption{Ignition delays of MV as a function of inverse temperature. Filled points are the overall ignition delay and hollow points are the first stage ignition delay. a) \SI{15}{\bar}. b) \SI{30}{\bar}}
+    \label{fig:ignition-delays}
+\end{figure}
+
+\section{Acknowledgements}\label{sec:acknowledgements}
+
+This paper is based on material supported by the National Science
+Foundation under Grant No. CBET-1402231.
+
+\printbibliography
+
+\end{document}
