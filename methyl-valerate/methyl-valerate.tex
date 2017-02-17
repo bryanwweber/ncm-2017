@@ -139,7 +139,7 @@ defined as the maximum of the pressure trace prior to the start of ignition and
 the ignition delays are defined as the time from the EOC until local maxima in
 the first time derivative of the pressure.
 
-\begin{figure}[htbp]
+\begin{figure}[htb]
     \begin{minipage}[t]{0.48\textwidth}
         \centering
         \resizebox{\linewidth}{!}{\input{figures/ignition_delay_definition.pgf}}
@@ -197,7 +197,7 @@ are determined by least squares fitting of the data of \textcite{Ortega2003},
 \Cref{fig:vapor-pressure} shows that the coefficients fit with this procedure
 give good agreement with the experimental data.
 
-\begin{table}[htbp]
+\begin{table}[htb]
     \centering
     \caption{Mixtures considered in this work}
     \begin{tabular}{cccccc}
@@ -308,7 +308,7 @@ mixture shows an NTC region at $P_C=\SI{30}{\bar}$ between approximately
 ignition delay at \SI{15}{\bar} from approximately \SIrange{720}{775}{\K}, with
 measured first-stage ignition delays between \SIlist{720;750}{\K}.
 
-\begin{figure}[htbp]
+\begin{figure}[htb]
     \centering
     \input{figures/ignition-delays.pgf}
     \caption{Ignition delays of MV as a function of inverse temperature. Filled
@@ -317,12 +317,56 @@ measured first-stage ignition delays between \SIlist{720;750}{\K}.
     \label{fig:ignition-delays}
 \end{figure}
 
-\begin{figure}[htbp]
-    \centering
-    \input{figures/pressure-traces.pgf}
-    \caption{Selected pressure traces around the NTC region of ignition delay for $\phi=1.0$}
-    \label{fig:pressure-traces}
+\Cref{fig:pressure-traces} shows the pressure traces for selected experiments at
+\(\phi=1.0\), \(P_C =\SI{30}{\bar}\). The three reactive pressure traces shown
+are prior to the onset of 2-stage ignition (blue, \SI{700}{\K}), one case with
+two-stage ignition (orange, \SI{734}{\K}), and one case near the
+high-temperature limit of the NTC region (green, \SI{775}{\K}). Also shown is a
+representative non-reactive pressure trace (red). By comparing the \SI{700}{\K}
+pressure trace with the non-reactive pressure trace, it can be seen that there
+is substantial heat release prior to main ignition as measured by the deviation
+of the reactive pressure trace from the non-reactive trace. However, there is
+only one peak in the time derivative of the pressure, so no first-stage ignition
+delay is defined for this case. It can also be seen that the highest temperature
+case shows some heat release prior to ignition, although again there is only one
+peak in the time derivative of the pressure. Furthermore, the heat release at
+the higher temperature appears to be more gradual than at the lowest
+temperature.
+
+\begin{figure}[htb]
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        \resizebox{\linewidth}{!}{\input{figures/pressure-traces.pgf}}
+        \caption{Selected pressure traces around the NTC region of ignition delay for $\phi=1.0$}
+        \label{fig:pressure-traces}
+    \end{minipage}\hfill%
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        \resizebox{\linewidth}{!}{\input{figures/simulation-comparison.pgf}}
+        \caption{Comparison of experimental and simulated results for $\phi=1.0$}
+        \label{fig:simulation-comparison}
+    \end{minipage}
 \end{figure}
+
+\section{Computational Results}\label{sec:computational-results}
+
+\Cref{fig:simulation-comparison} compares experimentally measured overall
+ignition delays with ignition delays computed with the Detailed model of
+\textcite{Dievart2013} for the $\phi=1.0$ experiments. Results for the other
+equivalence ratios are similar to these results, so are not shown here. It is
+important to note that the model of \textcite{Dievart2013} was not validated for
+MV combustion despite its inclusion in the model. At \SI{15}{\bar}, the model
+tends to under-predict the ignition delay and predicts an NTC region that is not
+present in the experiments. At \SI{30}{\bar}, the model predicts the
+low-temperature ignition delays well, but does not predict the NTC region found
+experimentally.
+
+To try and understand the underlying reasons for the disagreement between the \textcite{Dievart2013} model and the data, we constructed an alternate model using RMG (see \cref{sec:reaction-mechanism-generator}). As can be seen in \cref{fig:simulation-comparison}, the agreement between the RMG model and the experimental data is similar to the \textcite{Dievart2013} model for the \SI{30}{\bar} data. At \SI{15}{\bar}, the RMG model predicts a somewhat longer ignition delay, but still predicts an NTC region where none is present in the experimental data.
+
+In general, there could be three likely sources of error in the models: missing reaction pathways, incorrect values of the reaction rates, and incorrect values for thermodynamic properties of the species. We have noted in \cref{sec:reaction-mechanism-generator} that the RMG model has many more reactions than the \textcite{Dievart2013} model and the algorithm used in RMG considers a substantial number of the possible pathways. Therefore, , and we do not wish/don’t have the expertise to speculate as to any further pathways that may be missing. The second source of error may be incorrect reaction rate parameters, either because the rates are specified incorrectly in the model (e.g., typos) or because the rates are not well estimated by the typical analogy based-rules. However, again, we lack the expertise to critique the choice of rate parameters.
+
+The third source of error may lie in the estimation of the thermodynamic properties of the species, particularly their heats of formation. We suspect this to be a strong candidate for the large discrepancy, particularly in the RMG model, because the wrong first radical is selected by the model.
+
 \section{Acknowledgements}\label{sec:acknowledgements}
 
 This paper is based on material supported by the National Science
