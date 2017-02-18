@@ -22,9 +22,9 @@
 
 \LoadClass{article}
 
-% \RequirePackage{minted}
-% \usemintedstyle{friendly}
-% \newmintinline[python]{python}{}
+\RequirePackage{minted}
+\usemintedstyle{friendly}
+\newmintinline[python]{python}{}
 
 \RequirePackage{calc}
 
