@@ -1,0 +1,205 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% This work is licensed under the Creative Commons Attribution 4.0
+% International License. To view a copy of this license, visit
+% http://creativecommons.org/licenses/by/4.0/.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[12pt]{../ussci}
+
+\usepackage{enumitem}
+\setlist{noitemsep}
+
+\usepackage{siunitx}
+\usepackage{graphicx}
+\usepackage{mathtools}
+\usepackage{microtype}
+
+\usepackage[version=4]{mhchem}
+
+\usepackage[capitalize]{cleveref}
+%======================================================================
+\addbibresource{dme-meoh.bib}
+%======================================================================
+\newcommand\papertopic{Reaction Kinetics}
+%======================================================================
+\DeclareSIUnit\torr{torr}
+
+\title{ High-Pressure Autoignition of Binary Blends of Methanol and Dimethyl Ether }
+
+\author[1]{Hongfu Wang}
+\author[2*]{Bryan W.\ Weber}
+\author[2]{Ruozhou Fang}
+\author[2]{Chih-Jen Sung}
+\affil[2]{Department of Mechanical Engineering, University of Connecticut, Storrs,
+CT, USA}
+\affil[*]{Corresponding Author: \email{bryan.weber@uconn.edu}}
+
+\begin{document}
+\maketitle
+
+%====================================================================
+\begin{abstract} % not to exceed 200 words
+
+    Reactivity Controlled Compression Ignition (RCCI) is a new advanced engine
+    concept that uses a dual fuel mode of operation to achieve significant
+    improvements in fuel economy and emissions output. The fuels that are
+    typically used in this mode include a low- and a high-reactivity fuel in
+    varying proportions to control ignition timing. As such, understanding the
+    interaction effects during auto-ignition of binary fuel blends is critical
+    to optimizing these RCCI engines. In this work, we measure the auto-ignition
+    delays of binary mixtures of dimethyl ether (\ce{C2H6O}, DME) and methanol
+    (\ce{CH4O}, MeOH) in a rapid compression machine. In these experiments,
+    dimethyl ether and methanol function as the high- and low-reactivity fuels,
+    respectively. We considered five fuel blends at varying blending ratios (by
+    mole), including \SI{100}{\percent} DME-\SI{0}{\percent} MeOH,
+    \SI{75}{\percent} DME-\SI{25}{\percent} MeOH, \SI{50}{\percent}
+    DME-\SI{50}{\percent} MeOH, \SI{25}{\percent} DME-\SI{75}{\percent} MeOH,
+    and \SI{0}{\percent} DME-\SI{100}{\percent} MeOH. Experiments are conducted
+    at an engine-relevant pressure of \SI{30}{\bar}, for the stoichiometric
+    equivalence ratio. In addition, the experimental results are compared with
+    simulations using a chemical kinetic model for DME/MeOH combustion generated
+    by merging independent, well-validated models for DME and MeOH.
+
+\end{abstract}
+
+% (Provide 2-4 keywords describing your research. Only abbreviations firmly
+% established in the field may be used. These keywords will be used for
+% sessioning/indexing purposes.)
+\begin{keyword}
+    chemical kinetics\sep rapid compression machine\sep binary fuel blends\sep advanced engines
+\end{keyword}
+
+\section{Introduction}\label{introduction}
+
+To reduce the environmental impact of combustion, future combustion processes
+must feature substantially reduced pollutant emissions while maintaining high
+efficiency. A promising concept in this respect is low-temperature combustion
+(LTC). As an outstanding representative of LTC technologies, the dual-fuel RCCI
+operation has great potential in terms of combustion controllability. The
+general principle of Dual-fuel RCCI combustion requires two fuels with different
+reactivities, that is using a high reactivity fuel (such as diesel or dimethyl
+ether (DME)) to trigger the ignition and combustion of low-reactivity fuels
+(such as gasoline, methanol, ethanol, or butanol).
+
+DME is considered an efficient alternative fuel for use in diesel engines
+because it has excellent auto-ignition characteristics. The low boiling point
+(\SI{248}{\K}), low critical point (\SI{400}{\K}), and high cetane number (\(>
+55\)) of DME \autocite{Arcoumanis2008,Teng2001} make it well suited for
+compression ignition engines. In addition, the high oxygen content of DME
+(\SI{34.8}{\percent} by mass) together with the absence of a C-C bond
+contributes to ultra-low soot formation during DME combustion
+\autocite{Arcoumanis2008}.
+
+The promoting effect of DME on fuels with poor auto-ignition qualities such as
+methane and propane is a promising feature with respect to the RCCI concept.
+Therefore, some research has been conducted to reveal the promoting potential of
+DME. Several researchers \autocite{Burke2015a,Tang2012a,Chen2007a} have studied
+the ignition delay of DME/methane mixtures in a shock tube. The results have
+shown that DME has a strong promoting effect on the auto-ignition of methane,
+even when the concentration of methane is much higher than that of DME. Further,
+\textcite{Dames2016} showed the promoting effect of DME in DME/propane mixtures
+using a rapid compression machine. The results showed that propane combustion is
+promoted due to the large amount of radicals produced by low-temperature DME
+oxidation. Those studies indicate the potential of DME as a combustion promoter
+together with fuels with poor auto-ignition qualities.
+
+For dual-fuel RCCI operation, a lower reactivity fuel should be studied in
+combination with the high reactivity fuel. Methanol (MeOH) is well known as a
+widely used alcoholic alternative fuel, but when operated in a single fuel mode
+it tends to have poor auto-ignition quality \autocite{Siebers1987}. Given the
+great potential of DME as a combustion promoter, we expect that DME can
+significantly improve the auto-ignition quality of methanol and the combination
+will be effective for dual-fuel RCCI operation. In this work, we explore the
+auto-ignition characteristics of DME/MeOH binary mixtures. A set of ignition
+delay time data for DME/MeOH at different mixing ratios over a wide range of
+temperature and pressure at engine relevant conditions is obtained in a rapid
+compression machine (RCM). In addition, we construct a chemical kinetic model
+for DME/MeOH combustion by merging independent models for the fuels. This
+technique was successful for DME/propane mixtures \autocite{Dames2016}.
+Experimental results are compared to simulation results to validate the model.
+
+\section{Experimental Methods}\label{sec:experimental-methods}
+
+The RCM used in this study is a single piston arrangement and is pneumatically
+driven and hydraulically stopped. The device has been described in detail
+previously \autocite{Mittal2007a} and will be described here briefly for
+reference. The end of compression (EOC) temperature and pressure (\(T_C\) and
+\(P_C\) respectively), are independently changed by varying the overall
+compression ratio, initial pressure, and initial temperature of the experiments.
+The primary diagnostic on the RCM is the in-cylinder pressure. The pressure data
+is processed by a Python package called UConnRCMPy \autocite{uconnrcmpy}, which
+calculates \(P_C\), \(T_C\), and the ignition delay(s). The definition of the
+ignition delay is shown in \cref{fig:ign-delay-def}. The time of the EOC is
+defined as the maximum of the pressure trace prior to the start of ignition and
+the ignition delays are defined as the time from the EOC until local maxima in
+the first time derivative of the pressure.
+
+In addition to the reactive experiments, non-reactive experiments are conducted
+to determine the influence of machine-specific behavior on the experimental
+conditions and permit the calculation of the EOC temperature via the isentropic
+relations between pressure and temperature \autocite{Lee1998}. The EOC
+temperature is calculated by the procedure described in
+\cref{sec:computational-methods}.
+
+The mixtures considered in this study are shown in \cref{tab:mixtures}. Mixtures
+are prepared in stainless steel mixing tanks. The proportions of reactants in
+the mixture are determined by specifying the absolute mass of the methanol in
+the mixture (if present), the equivalence ratio, and the ratio of DME/MeOH in
+the fuel. Since MeOH is a liquid at room temperature and pressure, it is
+injected into the mixing tank through a septum. Proportions of DME, \ce{O2}, and
+\ce{N2} are added manometrically at room temperature.
+
+The RCM is equipped with heaters to control the initial temperature of the
+mixture. After filling in the components to the mixing tanks, the heaters are
+switched on and the system is allowed \SI{1.5}{\hour} to come to steady state.
+The mixing tanks are also equipped with magnetic stir bars to the reactants are
+well mixed for the duration of the experiments.
+
+\section{Computational Methods}\label{sec:computational-methods}
+\subsection{Experimental Modeling}\label{sec:experimental-modeling}
+
+The Python 3.5 interface of Cantera \autocite{cantera} version 2.3.0 is used for
+all simulations in this work. Detailed descriptions of the use of Cantera for
+these simulations can be found in the work of \textcite{Weber2016a} and
+\textcite{Dames2016}; a brief overview is given here. As mentioned in
+\cref{sec:experimental-methods}, non-reactive experiments are conducted to
+characterize the machine-specific effects on the experimental conditions in the
+RCM. This pressure trace is used to compute a volume trace by assuming that the
+reactants undergo a reversible, adiabatic, constant composition (i.e.,
+isentropic) compression during the compression stroke and an isentropic
+expansion after the EOC. The volume trace is applied to a simulation conducted
+in an \verb|IdealGasReactor| in Cantera \autocite{cantera} using the CVODES
+solver from the SUNDIALS suite \autocite{Hindmarsh2005}. The ignition delay from
+the simulations is defined in the same manner as in the experiments. The time
+derivative of the pressure in the simulations was computed by second order
+Lagrange polynomials, as discussed by \textcite{Chapra2010}.
+
+\subsection{Chemical Kinetic Model}\label{sec:chemical-kinetic-model}
+
+To the best of our knowledge, there are no chemical kinetic models for the
+combustion of binary mixtures of DME and MeOH available in the literature.
+Therefore, we construct a kinetic model in this work by combining two
+independent models. The kinetics for DME are taken from the work of
+\textcite{Dames2016} while the kinetics for MeOH are taken from the work of
+\textcite{Burke2016}. In the work of \textcite{Dames2016}, the authors used the
+DME chemistry from the work of \textcite{Burke2015a} and included updates to
+many of the reaction rates important for low-temperature ignition
+\autocite{Dames2016}. Therefore, we prefer the DME submechanism from
+\textcite{Dames2016}.
+
+To combine the two models, the propane submechanism was removed from the model
+of \textcite{Dames2016} and duplicate reactions and species were taken from the
+\textcite{Dames2016} model. No cross-reactions between DME and MeOH were
+considered in this work. In the work of \textcite{Dames2016}, it was found that
+for combined models of high-reactivity fuels such as DME and low-reactivity
+fuels such as methanol, cross-reactions between the fuels do not strongly affect
+the ignition delay and the fuels instead interact through radical species such
+as \ce{OH}.
+
+\section{Acknowledgements}\label{acknowledgements}
+
+This paper is based on material supported by the National Science
+Foundation under Grant No. CBET-1402231.
+
+\printbibliography
+
+\end{document}
