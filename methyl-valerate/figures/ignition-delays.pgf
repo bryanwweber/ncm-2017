@@ -2169,7 +2169,7 @@
 \pgfusepath{stroke}%
 \end{pgfscope}%
 \begin{pgfscope}%
-\pgftext[x=0.785651in,y=3.704385in,left,base]{\rmfamily\fontsize{12.000000}{14.400000}\selectfont a)}%
+\pgftext[x=4.517344in,y=2.667977in,left,base]{\rmfamily\fontsize{12.000000}{14.400000}\selectfont a) \(\displaystyle P_C = 15\ \text{bar}\)}%
 \end{pgfscope}%
 \begin{pgfscope}%
 \pgfsetbuttcap%
@@ -3808,7 +3808,7 @@
 \pgfusepath{stroke}%
 \end{pgfscope}%
 \begin{pgfscope}%
-\pgftext[x=0.785651in,y=1.738552in,left,base]{\rmfamily\fontsize{12.000000}{14.400000}\selectfont b)}%
+\pgftext[x=4.517344in,y=0.702144in,left,base]{\rmfamily\fontsize{12.000000}{14.400000}\selectfont b) \(\displaystyle P_C = 30\ \text{bar}\)}%
 \end{pgfscope}%
 \begin{pgfscope}%
 \pgfsetbuttcap%
