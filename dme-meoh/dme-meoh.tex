@@ -8,12 +8,18 @@
 \usepackage{enumitem}
 \setlist{noitemsep}
 
+\usepackage[version=4]{mhchem}
 \usepackage{siunitx}
+\sisetup{separate-uncertainty=true}
+
 \usepackage{graphicx}
+\usepackage{pgf}
+\usepgflibrary{fpu}
+
+\usepackage[tableposition=top]{caption}
+\usepackage{booktabs}
 \usepackage{mathtools}
 \usepackage{microtype}
-
-\usepackage[version=4]{mhchem}
 
 \usepackage[capitalize]{cleveref}
 %======================================================================
@@ -140,6 +146,12 @@ relations between pressure and temperature \autocite{Lee1998}. The EOC
 temperature is calculated by the procedure described in
 \cref{sec:computational-methods}.
 
+The RCM is equipped with heaters to control the initial temperature of the
+mixture. After filling in the components to the mixing tanks, the heaters are
+switched on and the system is allowed \SI{1.5}{\hour} to come to steady state.
+The mixing tanks are also equipped with magnetic stir bars to the reactants are
+well mixed for the duration of the experiments.
+
 The mixtures considered in this study are shown in \cref{tab:mixtures}. Mixtures
 are prepared in stainless steel mixing tanks. The proportions of reactants in
 the mixture are determined by specifying the absolute mass of the methanol in
@@ -148,11 +160,24 @@ the fuel. Since MeOH is a liquid at room temperature and pressure, it is
 injected into the mixing tank through a septum. Proportions of DME, \ce{O2}, and
 \ce{N2} are added manometrically at room temperature.
 
-The RCM is equipped with heaters to control the initial temperature of the
-mixture. After filling in the components to the mixing tanks, the heaters are
-switched on and the system is allowed \SI{1.5}{\hour} to come to steady state.
-The mixing tanks are also equipped with magnetic stir bars to the reactants are
-well mixed for the duration of the experiments.
+\begin{table}[htb]
+    \centering
+    \caption{Mixtures considered in this work}
+    \begin{tabular}{cccccc}
+        \toprule
+        \% DME & \% MeOH & \multicolumn{4}{c}{Mole Fraction (purity)} \\
+        \cmidrule{3-6}
+         & & DME (\SI{99.7}{\percent}) & MeOH (\SI{100.00}{\percent}) & \ce{O2} (\SI{99.999}{\percent}) & \ce{N2} (\SI{99.999}{\percent})  \\
+        \midrule
+        100 & 0 & 0.0654 & 0.0000 & 0.1963 & 0.7382 \\
+        75 & 25 & 0.0556 & 0.0185 & 0.1945 & 0.7314 \\
+        50 & 50 & 0.0427 & 0.0427 & 0.1921 & 0.7225 \\
+        25 & 75 & 0.0252 & 0.0756 & 0.1889 & 0.7103 \\
+        0 & 100 & 0.0000 & 0.1229 & 0.1843 & 0.6928 \\
+        \bottomrule
+    \end{tabular}
+    \label{tab:mixtures}
+\end{table}
 
 \section{Computational Methods}\label{sec:computational-methods}
 \subsection{Experimental Modeling}\label{sec:experimental-modeling}
