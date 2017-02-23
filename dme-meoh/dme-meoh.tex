@@ -114,14 +114,14 @@ widely used alcoholic alternative fuel, but when operated in a single fuel mode
 it tends to have poor auto-ignition quality \autocite{Siebers1987}. Given the
 great potential of DME as a combustion promoter, we expect that DME can
 significantly improve the auto-ignition quality of methanol and the combination
-will be effective for dual-fuel RCCI operation. In this work, we explore the
-auto-ignition characteristics of DME/MeOH binary mixtures. A set of ignition
-delay time data for DME/MeOH at different mixing ratios over a wide range of
-temperature and pressure at engine relevant conditions is obtained in a rapid
-compression machine (RCM). In addition, we construct a chemical kinetic model
-for DME/MeOH combustion by merging independent models for the fuels. This
-technique was successful for DME/propane mixtures \autocite{Dames2016}.
-Experimental results are compared to simulation results to validate the model.
+will be effective for dual-fuel RCCI operation.
+
+In this work, we explore the auto-ignition characteristics of DME/MeOH binary
+mixtures. A set of ignition delay time data for DME/MeOH at different mixing
+ratios over a wide range of temperature and pressure at engine relevant
+conditions is obtained in a rapid compression machine (RCM). In addition, we
+construct a chemical kinetic model for DME/MeOH combustion by merging
+independent models for the fuels. Simulations utilizing this model is compared to experimental results and ....
 
 \section{Experimental Methods}\label{sec:experimental-methods}
 
@@ -144,7 +144,7 @@ to determine the influence of machine-specific behavior on the experimental
 conditions and permit the calculation of the EOC temperature via the isentropic
 relations between pressure and temperature \autocite{Lee1998}. The EOC
 temperature is calculated by the procedure described in
-\cref{sec:computational-methods}.
+\cref{sec:rcm-modeling}.
 
 The RCM is equipped with heaters to control the initial temperature of the
 mixture. After filling in the components to the mixing tanks, the heaters are
@@ -180,45 +180,47 @@ injected into the mixing tank through a septum. Proportions of DME, \ce{O2}, and
 \end{table}
 
 \section{Computational Methods}\label{sec:computational-methods}
-\subsection{Experimental Modeling}\label{sec:experimental-modeling}
 
-The Python 3.5 interface of Cantera \autocite{cantera} version 2.3.0 is used for
-all simulations in this work. Detailed descriptions of the use of Cantera for
-these simulations can be found in the work of \textcite{Weber2016a} and
+To the best of our knowledge, there are no chemical kinetic models for the
+combustion of binary mixtures of DME and MeOH available in the literature.
+Therefore, we construct a kinetic model in this work by combining two
+independent models. The kinetics for DME are taken from the work of
+\textcite{Burke2015a} while the kinetics for MeOH are taken from the work of
+\textcite{Burke2016}.
+
+To combine the two models, duplicate reactions and species were taken from the
+\textcite{Burke2015a} model; however, the models were produced by the same
+research group approximately one year apart, so we do not expect many
+differences in the common chemistry. No cross-reactions between DME and MeOH
+are considered in this work. In the work of \textcite{Dames2016}, it was found
+that for combined models of high-reactivity fuels such as DME and low-reactivity
+fuels such as methanol, cross-reactions between the fuels do not strongly affect
+the ignition delay and the fuels instead interact through radical species such
+as \ce{OH}.
+
+\subsection{RCM Modeling}\label{sec:rcm-modeling}
+
+All of the simulations in this work use the Python interface for Cantera 2.3.0
+\autocite{cantera}. Two types of simulations are considered. The first is used
+to calculate \(T_C\). Detailed descriptions of the use of Cantera for these
+simulations can be found in the work of \textcite{Weber2016a} and
 \textcite{Dames2016}; a brief overview is given here. As mentioned in
 \cref{sec:experimental-methods}, non-reactive experiments are conducted to
 characterize the machine-specific effects on the experimental conditions in the
 RCM. This pressure trace is used to compute a volume trace by assuming that the
 reactants undergo a reversible, adiabatic, constant composition (i.e.,
 isentropic) compression during the compression stroke and an isentropic
-expansion after the EOC. The volume trace is applied to a simulation conducted
-in an \verb|IdealGasReactor| in Cantera \autocite{cantera} using the CVODES
-solver from the SUNDIALS suite \autocite{Hindmarsh2005}. The ignition delay from
-the simulations is defined in the same manner as in the experiments. The time
-derivative of the pressure in the simulations was computed by second order
-Lagrange polynomials, as discussed by \textcite{Chapra2010}.
+expansion after the EOC. The volume trace is applied to a non-reactive
+simulation conducted in an \verb|IdealGasReactor| in Cantera \autocite{cantera}
+and the temperature at the end of compression is reported as \(T_C\).
 
-\subsection{Chemical Kinetic Model}\label{sec:chemical-kinetic-model}
-
-To the best of our knowledge, there are no chemical kinetic models for the
-combustion of binary mixtures of DME and MeOH available in the literature.
-Therefore, we construct a kinetic model in this work by combining two
-independent models. The kinetics for DME are taken from the work of
-\textcite{Dames2016} while the kinetics for MeOH are taken from the work of
-\textcite{Burke2016}. In the work of \textcite{Dames2016}, the authors used the
-DME chemistry from the work of \textcite{Burke2015a} and included updates to
-many of the reaction rates important for low-temperature ignition
-\autocite{Dames2016}. Therefore, we prefer the DME submechanism from
-\textcite{Dames2016}.
-
-To combine the two models, the propane submechanism was removed from the model
-of \textcite{Dames2016} and duplicate reactions and species were taken from the
-\textcite{Dames2016} model. No cross-reactions between DME and MeOH were
-considered in this work. In the work of \textcite{Dames2016}, it was found that
-for combined models of high-reactivity fuels such as DME and low-reactivity
-fuels such as methanol, cross-reactions between the fuels do not strongly affect
-the ignition delay and the fuels instead interact through radical species such
-as \ce{OH}.
+The second type of simulation is used to include reactivity in the simulations.
+This type of simulation uses a constant-volume, adiabatic reactor. This method
+does not consider the effect of the compression stroke and post-compression heat
+loss present in the experiments and the initial conditions in the simulation are
+set equal to the EOC conditions in the experiment. The ignition delay is defined
+as the time required for the simulated temperature to increase by \SI{400}{\K}
+over the initial temperature in the simulation.
 
 \section{Acknowledgements}\label{acknowledgements}
 
