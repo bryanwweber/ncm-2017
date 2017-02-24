@@ -91,7 +91,7 @@ because it has excellent auto-ignition characteristics. The low boiling point
 (\SI{248}{\K}), low critical point (\SI{400}{\K}), and high cetane number (\(>
 55\)) of DME \autocite{Arcoumanis2008,Teng2001} make it well suited for
 compression ignition engines. In addition, the high oxygen content of DME
-(\SI{34.8}{\percent} by mass) together with the absence of a C-C bond
+(\SI{34.8}{\percent} by mass) together with the absence of C-C bonds
 contributes to ultra-low soot formation during DME combustion
 \autocite{Arcoumanis2008}.
 
@@ -118,10 +118,12 @@ will be effective for dual-fuel RCCI operation.
 
 In this work, we explore the auto-ignition characteristics of DME/MeOH binary
 mixtures. A set of ignition delay time data for DME/MeOH at different mixing
-ratios over a wide range of temperature and pressure at engine relevant
-conditions is obtained in a rapid compression machine (RCM). In addition, we
-construct a chemical kinetic model for DME/MeOH combustion by merging
-independent models for the fuels. Simulations utilizing this model is compared to experimental results and ....
+ratios over a wide range of temperature at engine relevant pressure conditions
+and the stoichiometric equivalence ratio is obtained in a rapid compression
+machine (RCM). In addition, we construct a chemical kinetic model for DME/MeOH
+combustion by merging independent models for the fuels. Simulations utilizing
+this model are compared to experimental results and good agreement is observed
+over the range of the experiments.
 
 \section{Experimental Methods}\label{sec:experimental-methods}
 
@@ -146,30 +148,42 @@ relations between pressure and temperature \autocite{Lee1998}. The EOC
 temperature is calculated by the procedure described in
 \cref{sec:rcm-modeling}.
 
+\begin{figure}[htb]
+    \centering
+    \resizebox{0.6\textwidth}{!}{\input{figures/ignition_delay_definition.pgf}}
+    \caption{Definition of the ignition delay used in this work. The
+    experiment in this figure was conducted for a \SI{25}{\percent} DME mixture with \(P_0=\SI{1.1528}{\bar}\), \(T_0=\SI{338}{\K}\),
+    \(P_C=\SI{29.98}{\bar}\), \(T_C=\SI{748}{\K}\),
+    \(\tau=\SI{35.39\pm1.93}{\ms}\).}
+    \label{fig:ign-delay-def}
+\end{figure}
+
 The RCM is equipped with heaters to control the initial temperature of the
 mixture. After filling in the components to the mixing tanks, the heaters are
 switched on and the system is allowed \SI{1.5}{\hour} to come to steady state.
 The mixing tanks are also equipped with magnetic stir bars to the reactants are
 well mixed for the duration of the experiments.
 
-The mixtures considered in this study are shown in \cref{tab:mixtures}. Mixtures
-are prepared in stainless steel mixing tanks. The proportions of reactants in
-the mixture are determined by specifying the absolute mass of the methanol in
-the mixture (if present), the equivalence ratio, and the ratio of DME/MeOH in
-the fuel. Since MeOH is a liquid at room temperature and pressure, it is
-injected into the mixing tank through a septum. Proportions of DME, \ce{O2}, and
-\ce{N2} are added manometrically at room temperature.
+The mixtures considered in this study are shown in \cref{tab:mixtures}. The
+``\si{\percent} DME'' and ``\si{\percent} MeOH'' columns indicate the molar
+percent of each component in the fuel mixture. Mixtures are prepared in
+stainless steel mixing tanks. The proportions of reactants in the mixture are
+determined by specifying the absolute mass of the methanol in the mixture (if
+present), the equivalence ratio, and the molar ratio of DME/MeOH in the fuel.
+Since MeOH is a liquid at room temperature and pressure, it is injected into the
+mixing tank through a septum. Proportions of DME, \ce{O2}, and \ce{N2} are added
+manometrically at room temperature.
 
 \begin{table}[htb]
     \centering
     \caption{Mixtures considered in this work}
     \begin{tabular}{SScccc}
         \toprule
-        {\% DME}& {\% MeOH} & \multicolumn{4}{c}{Mole Fraction (purity)} \\
+        && \multicolumn{4}{c}{Mole Fraction (purity)} \\
         \cmidrule{3-6}
-         & & DME (\SI{99.7}{\percent}) & MeOH (\SI{100.00}{\percent}) & \ce{O2} (\SI{99.994}{\percent}) & \ce{N2} (\SI{99.999}{\percent})  \\
+        {\si{\percent} DME}& {\si{\percent} MeOH} & DME (\SI{99.7}{\percent}) & MeOH (\SI{100.00}{\percent}) & \ce{O2} (\SI{99.994}{\percent}) & \ce{N2} (\SI{99.999}{\percent})  \\
         \midrule
-        100 & 0 & 0.0654 & 0.0000 & 0.1963 & 0.7382 \\
+        100 & 0 & 0.0654 & 0.0000 & 0.1963 & 0.7383 \\
         75 & 25 & 0.0556 & 0.0185 & 0.1945 & 0.7314 \\
         50 & 50 & 0.0427 & 0.0427 & 0.1921 & 0.7225 \\
         25 & 75 & 0.0252 & 0.0756 & 0.1889 & 0.7103 \\
@@ -222,10 +236,84 @@ set equal to the EOC conditions in the experiment. The ignition delay is defined
 as the time required for the simulated temperature to increase by \SI{400}{\K}
 over the initial temperature in the simulation.
 
+\section{Results and Discussion}\label{sec:results-and-discussion}
+
+Ignition delay results for the mixtures listed in \cref{tab:mixtures} are shown
+in \cref{fig:ign-delays} for the stoichiometric equivalence ratio and \(P_C =
+\SI{30}{\bar}\). In the following, we use the shorthand of specifying the molar
+percent of DME in the fuel mixture to indicate the mixture condition.
+
+It can be seen in \cref{fig:ign-delays} that the \SI{100}{\percent} DME case
+(\SI{0}{\percent} MeOH) is the most reactive while the \SI{0}{\percent} DME case
+(\SI{100}{\percent} MeOH) is the least reactive. Interestingly, the change in
+reactivity as MeOH is added to DME appears to be nonlinear with respect to the
+molar percent of MeOH added. In other words, the change in ignition delay at a
+fixed \(T_C\) is smaller going from \SI{100}{\percent} DME to \SI{50}{\percent}
+DME than going from \SI{50}{\percent} DME to \SI{0}{\percent} DME.
+
+This is also demonstrated by \cref{fig:temp-comp}, which shows the \(T_C\)
+values for ignition delays near \SI{20}{\ms} at the range of mixtures considered
+in this study. As the \si{\percent} DME decreases in the mixture, the
+temperature required to achieve the same ignition delay increases. However, the
+temperature increase from \SI{100}{\percent} to \SI{50}{\percent} DME is much
+smaller than the increase from \SI{50}{\percent} to \SI{0}{\percent} DME.
+
+\begin{figure}[htb]
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        \resizebox{\linewidth}{!}{\input{figures/simulation-comparison.pgf}}
+        \caption{Ignition delays of mixtures of DME and MeOH as a function of
+        inverse temperature, for an equivalence ratio of \(\phi = 1.0\) and
+        \(P_C = \SI{30}{\bar}\). Constant volume simulations are shown as the
+        solid lines.}
+        \label{fig:ign-delays}
+    \end{minipage}\hfill%
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        \resizebox{\linewidth}{!}{\input{figures/temperature-comparison.pgf}}
+        \caption{\(T_C\) values for ignition delays near \SI{20}{\ms} at the
+        range of mixtures considered in this study}
+        \label{fig:temp-comp}
+    \end{minipage}\hfill%
+\end{figure}
+
+Also shown on \cref{fig:ign-delays} are constant volume, adiabatic simulations
+computed according to the procedure laid out in \cref{sec:rcm-modeling}. In
+general, the agreement between the model and the experiments is quite good over
+the entire range of the experiments. It can be seen in \cref{fig:ign-delays}
+that at low temperatures for a given mixture composition the ignition delay
+tends to be under-predicted, while at the higher temperatures the ignition delay
+is over-predicted.
+
+As discussed by \textcite{Mittal2008}, this is likely due in part to the
+modeling procedure used in this work. In general, we expect constant volume
+simulations to have shorter ignition delays than the experiments for long
+ignition delays because they do not include the effect of post-compression heat
+loss; conducting simulations that include the post-compression heat loss are
+very likely to improve agreement in this region. Furthermore, for short ignition
+delays, we expect constant volume simulations to over-predict the ignition delay
+because they do not include the effect of radical pool buildup during the
+compression stroke. Therefore, conducting simulations that include the
+compression stroke are very likely to improve the agreement for short ignition
+delays.
+
+\section{Conclusion}\label{sec:conclusion}
+
+In this study, we have measured ignition delays for binary mixtures of dimethyl
+ether and methanol for engine-relevant pressure, temperature, and equivalence
+ratio conditions using a heated rapid compression machine. The ignition delay
+results show that pure DME is more reactive than pure MeOH, and that the
+increase in ignition delay as DME is replaced by MeOH is non-linear as a
+function of the blending fraction. The ignition delays are also compared to a
+new chemical kinetic model constructed by combining independent models for the
+two fuels. This model does not consider cross reactions between DME and MeOH.
+Nonetheless, the model gives quite good agreement with the data, supporting the
+hypothesis that the fuels do not interact via cross reactions but instead
+through common radicals such as \ce{OH}. In addition, this further demonstrates that models for low-reactivity fuels such as methanol and high-reactivity fuels such as DME can be constructed by simple concatenation and deduplication of their respective independent models.
+
 \section{Acknowledgements}\label{acknowledgements}
 
-This paper is based on material supported by the National Science
-Foundation under Grant No. CBET-1402231.
+This paper is based on material supported by...
 
 \printbibliography
 
