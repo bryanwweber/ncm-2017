@@ -64,12 +64,12 @@ CT, USA}
 \section{Introduction}\label{introduction}
 
 In recent years, there has been a surge in interest in ensuring that research
-outputs are reproducible across time and personnel \autocite{NatureEds2016}.
+outputs are reproducible across time and personnel~\autocite{NatureEds2016}.
 Recognizing that the code used to process experimental data is an important part
 of the chain from observation to result and publication, this paper presents the
 design and operation of a software package to process the pressure data
 collected from Rapid Compression Machines (RCMs). Our package, called UConnRCMPy
-\autocite{uconnrcmpy}, is designed to analyze the data acquired from the RCM at
+~\autocite{uconnrcmpy}, is designed to analyze the data acquired from the RCM at
 the University of Connecticut (UConn). Despite the initial focus on data from
 the UConn RCM, the package is designed to be extensible so that it can be used
 for data in different formats while providing a consistent interface to the
@@ -92,20 +92,19 @@ RCM data including:
   calculate the temperature at the end of compression (EOC)
 \end{itemize}
 
-Previous software used to analyze RCM data has generally been
-undocumented and untested code specific to the researcher conducting the
-experiments. Moreover, the software typically used to estimate the
-temperature in the experiments is difficult to integrate with the data
-processing code. To the best of the authors' knowledge, UConnRCMPy is
-the first package for analysis of standard RCM data to be presented in
-detail in the literature, and it tightly integrates the temperature
-estimation routine into the workflow, reducing errors and
+Previous software used to analyze RCM data has generally been undocumented and
+untested code specific to the researcher conducting the experiments. Moreover,
+the software typically used to estimate the temperature in the experiments is
+difficult to integrate with the data processing code. To the best of the
+authors' knowledge, UConnRCMPy is the first package for analysis of standard RCM
+data to be presented in detail in the literature, and it tightly integrates the
+temperature estimation routine into the workflow, reducing errors and
 inefficiencies.
 
 \section{RCM Signal Processing Procedure}\label{rcm-signal-processing-procedure}
 
 The RCMs at the University of Connecticut have been described extensively
-elsewhere \autocite{Das2012,Mittal2007a}, and interested readers are referred to
+elsewhere~\autocite{Das2012,Mittal2007a}, and interested readers are referred to
 those papers for further details. The primary diagnostic on the RCM is the
 reaction chamber pressure during and after the compression process, measured by
 a dynamic pressure transducer. The pressure trace is processed to determine the
@@ -123,11 +122,10 @@ voltage signal by a charge amplifier with a nominal output of \SI{0}{\V}. In
 addition, the output range of \SIrange{0}{10}{\V} is set by the operator to
 correspond to a particular pressure range by setting a ``scale factor''. The
 voltage output from the charge amplifier is digitized by a hardware data
-acquisition system and recorded into a plain text file by a LabView
-Virtual Instrument. \Cref{fig:raw-voltage} shows a typical voltage trace
-measured from the RCM at UConn and demonstrates the typical noise in the signal,
-which requires filtering and further processing to produce a useful pressure
-trace.
+acquisition system and recorded into a plain text file by a LabView Virtual
+Instrument. \Cref{fig:raw-voltage} shows a typical voltage trace measured from
+the RCM at UConn and demonstrates the typical noise in the signal, which
+requires filtering and further processing to produce a useful pressure trace.
 
 \begin{figure}[htbp]
     \begin{minipage}[t]{0.48\textwidth}
@@ -151,7 +149,7 @@ trace.
     \end{minipage}
 \end{figure}
 
-In the current version of UConnRCMPy \autocite{uconnrcmpy}, the voltage is
+In the current version of UConnRCMPy~\autocite{uconnrcmpy}, the voltage is
 filtered using a first-order Butterworth filter. The cutoff frequency of the
 filter is chosen automatically by a procedure described in the work of
 \textcite{Yu1999,Duarte2014}. Briefly, this procedure applies low-pass filters
@@ -162,13 +160,12 @@ frequency and demonstrates that the residuals are nearly linear for a range of
 cutoff frequencies. This range tends to start near one-twentieth the Nyquist
 frequency, as demonstrated by the left-most line labeled ``Fitting Edges'' on
 \cref{fig:residuals}. To determine the right edge of the linear region, a series
-of linear regressions are performed. The $y$-intercept of the regression
-with the highest coefficient of determination is used to choose the optimal
-cutoff frequency. The right-most line labeled ``Fitting Edges'' in
-\cref{fig:residuals} demonstrates a case where the end point set at \num{0.15}
-times the Nyquist frequency produces the best fit. The optimal cutoff frequency
-is chosen as the frequency at the intersection of the $y$-intercept and the
-residuals curve.
+of linear regressions are performed. The $y$-intercept of the regression with
+the highest coefficient of determination is used to choose the optimal cutoff
+frequency. The right-most line labeled ``Fitting Edges'' in \cref{fig:residuals}
+demonstrates a case where the end point set at \num{0.15} times the Nyquist
+frequency produces the best fit. The optimal cutoff frequency is chosen as the
+frequency at the intersection of the $y$-intercept and the residuals curve.
 
 After filtering, the voltage trace is converted to a pressure trace by
 correcting for the offset from the nominal initial volage of \SI{0}{\V} apparent
@@ -178,29 +175,28 @@ is a vector of time-varying pressure values that must be further processed to
 determine the time of the EOC and the ignition delay.
 
 Once the pressure trace has been constructed, \(T_C\), \(P_C\), and \(\tau\) can
-be calculated. In the current version of UConnRCMPy \autocite{uconnrcmpy}, the
+be calculated. In the current version of UConnRCMPy~\autocite{uconnrcmpy}, the
 time of the EOC is determined by finding the local maximum of the pressure prior
 to ignition. Then, the ignition delay is determined as the time difference
 between the EOC and the point of ignition, where the point of ignition is
 defined as the inflection point in the pressure trace due to ignition. The
 inflection point is found by the maximum of the first derivative of the pressure
-with respect to time. In the current version of UConnRCMPy
-\autocite{uconnrcmpy}, the first derivative of the experimental pressure trace
-is computed by a second-order forward differencing method. The derivative is
-then smoothed by a moving average algorithm with a width of 151 points. This
-value for the moving average window was chosen empirically.
+with respect to time. In the current version of
+UConnRCMPy~\autocite{uconnrcmpy}, the first derivative of the experimental
+pressure trace is computed by a second-order forward differencing method. The
+derivative is then smoothed by a moving average algorithm with a width of 151
+points. This value for the moving average window was chosen empirically.
 
-For some conditions, the reactants may undergo two distinct stages of
-ignition. These cases can be distinguished by a pair of peaks in the
-first time derivative of the pressure. For some two-stage ignition
-cases, the first-stage pressure rise, and consequently the peak in the
-derivative, are relatively weak, making it hard to distinguish the peak
-due to ignition from the background noise. This is currently the area
-requiring the most manual intervention, and one area where significant
-improvements can be made by refining the differentiation and
-filtering algorithms. An experiment that shows two clear peaks
-in the derivative is shown in \cref{fig:ign-delay-def} to
-demonstrate the definitions of the ignition delays.
+For some conditions, the reactants may undergo two distinct stages of ignition.
+These cases can be distinguished by a pair of peaks in the first time derivative
+of the pressure. For some two-stage ignition cases, the first-stage pressure
+rise, and consequently the peak in the derivative, are relatively weak, making
+it hard to distinguish the peak due to ignition from the background noise. This
+is currently the area requiring the most manual intervention, and one area where
+significant improvements can be made by refining the differentiation and
+filtering algorithms. An experiment that shows two clear peaks in the derivative
+is shown in \cref{fig:ign-delay-def} to demonstrate the definitions of the
+ignition delays.
 
 \begin{figure}[htbp]
     \centering
@@ -210,33 +206,30 @@ demonstrate the definitions of the ignition delays.
     \label{fig:ign-delay-def}
 \end{figure}
 
-The final parameter of interest presently is the EOC temperature,
-\(T_C\). This temperature is often used as the reference temperature
-when reporting ignition delays. In general, it is difficult to measure
-the temperature as a function of time in the reaction chamber of the
-RCM, so methods to estimate the temperature from the pressure trace are
-used. The detailed procedure used in UConnRCMPy is described in the work
-of \textcite{Dames2016}, and an overview is given here.
+The final parameter of interest presently is the EOC temperature, \(T_C\). This
+temperature is often used as the reference temperature when reporting ignition
+delays. In general, it is difficult to measure the temperature as a function of
+time in the reaction chamber of the RCM, so methods to estimate the temperature
+from the pressure trace are used. The detailed procedure used in UConnRCMPy is
+described in the work of \textcite{Dames2016}, and an overview is given here.
 
-In general, the temperature in the RCM reaction chamber as a function of
-time can be found by integrating the first law of thermodynamics for an
-ideal gas:
+In general, the temperature in the RCM reaction chamber as a function of time
+can be found by integrating the first law of thermodynamics for an ideal gas:
 %
 \begin{equation} \label{eq:first-law}
     c_v \frac{dT}{dt} = -P \frac{dv}{dt} - \sum_k u_k \frac{d Y_k}{dt}
 \end{equation}
 %
-where \(c_v\) is the specific heat at constant volume of the mixture,
-\(v\) is the specific volume, \(u_k\) and \(Y_k\) are the specific
-internal energy and mass fraction of the species \(k\), and \(t\) is
-time. In UConnRCMPy, \cref{eq:first-law} is integrated by Cantera
-\autocite{cantera}.
+where \(c_v\) is the specific heat at constant volume of the mixture, \(v\) is
+the specific volume, \(u_k\) and \(Y_k\) are the specific internal energy and
+mass fraction of the species \(k\), and \(t\) is time. In UConnRCMPy,
+\cref{eq:first-law} is integrated by Cantera~\autocite{cantera}.
 
 Integrating \cref{eq:first-law} requires knowledge of the volume of the reaction
 chamber as a function of time. To calculate the volume as a function of time, it
 is assumed that there is a core of gas in the reaction chamber that undergoes an
-isentropic, constant composition compression \autocite{Lee1998}. The initial
-entropy of the gas mixture is calculated using Cantera \autocite{cantera}.
+isentropic, constant composition compression~\autocite{Lee1998}. The initial
+entropy of the gas mixture is calculated using Cantera~\autocite{cantera}.
 Subsequently, the state of the mixture is fixed by using the entropy and
 measured pressure; from this information, the volume is calculated. The initial
 volume is arbitrarily taken to be \(V_0=\SI{1.0}{\m\cubed}\). The initial volume
@@ -258,7 +251,7 @@ of the reactions does not change \(T_C\), validating the assumption of
 adiabatic, constant composition compression. Although including
 reactions during the compression stroke does not affect the value of
 \(T_C\), it does allow for the buildup of a small pool of radicals that
-can affect processes after the EOC \autocite{Mittal2008}. Thus, it is
+can affect processes after the EOC~\autocite{Mittal2008}. Thus, it is
 critical to include reactions during the compression stroke when
 conducting simulations to compare a kinetic model to experimental
 results.
@@ -280,7 +273,7 @@ pressure trace is used after the EOC instead of the reactive pressure trace.
 This procedure has been validated experimentally by measuring the temperature in
 the reaction chamber during and after the compression stroke. The temperature of
 the reactants was found to be within $\pm\sim $\SI{5}{\K} of the simulated
-temperature \autocite{Das2012a,Uddi2012}.
+temperature~\autocite{Das2012a,Uddi2012}.
 
 \section{Implementation and Usage of UConnRCMPy}\label{implementation-and-usage-of-uconnrcmpy}
 
@@ -289,7 +282,7 @@ UConnRCMPy is through the \python|Condition| class, the highest level of data
 representation. The \python|Condition| class contains all of the information
 pertaining to the experiments at a given condition. The intended use of this
 class is in an interactive Python interpreter (the authors prefer the Jupyter
-Notebook with an IPython kernel \autocite{Perez2007}). First, the user creates
+Notebook with an IPython kernel~\autocite{Perez2007}). First, the user creates
 an instance of the \python|Condition| class.
 
 \begin{minted}{python}
@@ -302,7 +295,7 @@ cond_00_02 = Condition(cti_file='./species.cti')
 The \python|cti_file| argument to \python|Condition| must point to a file in the
 CTI format that contains the thermodynamic and reaction information for the
 species in the mixture. The experiments in the following example were conducted
-with mixtures of propane, oxygen, and nitrogen \autocite{Dames2016}. The CTI
+with mixtures of propane, oxygen, and nitrogen~\autocite{Dames2016}. The CTI
 file necessary to run this example can be found in the Supplementary Material of
 the work by \textcite{Dames2016}. Then, the composition of the mixture under
 consideration must be added to the \python|initial_state| parameter of the
@@ -332,20 +325,19 @@ compression ratio of the reactor, and the filter frequnecy used.
 \begin{minted}{python}
 # Conduct reactive experiment #1 on the RCM
 cond_00_02.add_experiment('00_in_02_mm_373K-1282t-100x-19-Jul-15-1633.txt')
-# ... add other reactive experiments
+# ... conduct and add other reactive experiments
 \end{minted}
 
-In general, for a given condition, the user will conduct and process all
-of the reactive experiments before conducting any non-reactive
-experiments. Then, the user chooses one of the reactive experiments as
-the reference experiment for the condition (i.e., the one whose ignition
-delay(s) and \(T_C\) are reported) by inspection of the data in the
-spreadsheet. The reference experiment is defined as the experimental run
-whose overall ignition delay is closest to the mean overall ignition
-delay among the experiments at a given condition. To select the
-reference experiment, the user sets the \python|reactive_file|
-attribute of the \python|Condition| instance. For this case, the
-reference experiment is the run that took place at 16:33:
+In general, for a given condition, the user will conduct and process all of the
+reactive experiments before conducting any non-reactive experiments. Then, the
+user chooses one of the reactive experiments as the reference experiment for the
+condition (i.e., the one whose ignition delay(s) and \(T_C\) are reported) by
+inspection of the data in the spreadsheet. The reference experiment is defined
+as the experimental run whose overall ignition delay is closest to the mean
+overall ignition delay among the experiments at a given condition. To select the
+reference experiment, the user sets the \python|reactive_file| attribute of the
+\python|Condition| instance. For this case, the reference experiment is the run
+that took place at 16:33:
 
 \begin{minted}{python}
 cond_00_02.reactive_file = '00_in_02_mm_373K-1282t-100x-19-Jul-15-1633.txt'
@@ -364,16 +356,15 @@ prompted for the file name when the first non-reactive case is added.
 cond_00_02.add_experiment('NR_00_in_02_mm_373K-1278t-100x-19-Jul-15-1652.txt')
 \end{minted}
 
-UConnRCMPy determines that this is a non-reactive experiment and
-generates a new figure that compares the current non-reactive case with
-the reference reactive case. For this particular example, the pressure traces
-are shown in \cref{fig:ign-delay-def}. In this case, the non-reactive
-pressure agrees very well with the reactive pressure and no further
-experiments are necessary; in principle, any number of non-reactive
-experiments can be conducted and added to the figure for comparison.
-Since there is good agreement between the non-reactive and reactive
-pressure traces, the user sets the \python|nonreactive_file| attribute of the
-\python|Condition| instance.
+UConnRCMPy determines that this is a non-reactive experiment and generates a new
+figure that compares the current non-reactive case with the reference reactive
+case. For this particular example, the pressure traces are shown in
+\cref{fig:ign-delay-def}. In this case, the non-reactive pressure agrees very
+well with the reactive pressure and no further experiments are necessary; in
+principle, any number of non-reactive experiments can be conducted and added to
+the figure for comparison. Since there is good agreement between the
+non-reactive and reactive pressure traces, the user sets the
+\python|nonreactive_file| attribute of the \python|Condition| instance.
 
 \begin{minted}{python}
 cond_00_02.nonreactive_file = 'NR_00_in_02_mm_373K-1278t-100x-19-Jul-15-1652.txt'
@@ -414,12 +405,13 @@ cond_00_02.compare_to_sim(run_reactive=True, run_nonreactive=True)
 
 UConnRCMPy is documented using standard Python docstrings for functions and
 classes. The documentation is converted to HTML files by the Sphinx
-documentation generator \autocite{Brandl2016}. The format of the docstrings
+documentation generator~\autocite{Brandl2016}. The format of the docstrings
 conforms to the NumPy docstring format so that the autodoc module of Sphinx can
 be used. The documentation is available on the web at
 \url{https://bryanwweber.github.io/UConnRCMPy/}. UConnRCMPy also relies heavily
-on functionality from the NumPy \autocite{vanderWalt2011}, SciPy
-\autocite{Jones2001}, and Matplotlib \autocite{Hunter2007} Python packages.
+on functionality from the NumPy~\autocite{vanderWalt2011},
+SciPy~\autocite{Jones2001}, and Matplotlib~\autocite{Hunter2007} Python
+packages.
 
 % \begin{figure}[htbp]
 %     \centering
@@ -430,12 +422,12 @@ on functionality from the NumPy \autocite{vanderWalt2011}, SciPy
 
 \section{Conclusions and Future Work}\label{conclusions-and-future-work}
 
-UConnRCMPy provides a framework to enable consistent analysis of RCM
-data. Because it is open source and extensible, UConnRCMPy can help to
-ensure that RCM data in the community can be analyzed in a reproducible
-manner; in addition, it can be easily modified and used for data in any
-format. In this sense, UConnRCMPy can be used more generally to process
-any RCM experiments where the ignition delay is the primary output.
+UConnRCMPy provides a framework to enable consistent analysis of RCM data.
+Because it is open source and extensible, UConnRCMPy can help to ensure that RCM
+data in the community can be analyzed in a reproducible manner; in addition, it
+can be easily modified and used for data in any format. In this sense,
+UConnRCMPy can be used more generally to process any RCM experiments where the
+ignition delay is the primary output.
 
 Future plans for UConnRCMPy include the development of a robust test suite to
 prevent regressions and document correct usage of the framework, as well as the
