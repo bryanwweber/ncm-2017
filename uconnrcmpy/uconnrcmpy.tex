@@ -68,13 +68,13 @@ outputs are reproducible across time and personnel~\autocite{NatureEds2016}.
 Recognizing that the code used to process experimental data is an important part
 of the chain from observation to result and publication, this paper presents the
 design and operation of a software package to process the pressure data
-collected from Rapid Compression Machines (RCMs). Our package, called UConnRCMPy
-~\autocite{uconnrcmpy}, is designed to analyze the data acquired from the RCM at
-the University of Connecticut (UConn). Despite the initial focus on data from
-the UConn RCM, the package is designed to be extensible so that it can be used
-for data in different formats while providing a consistent interface to the
-user. Thus, UConnRCMPy offers all of the features required to process standard
-RCM data including:
+collected from Rapid Compression Machines (RCMs). Our package, called
+UConnRCMPy~\autocite{uconnrcmpy}, is designed to analyze the data acquired from
+the RCM at the University of Connecticut (UConn). Despite the initial focus on
+data from the UConn RCM, the package is designed to be extensible so that it can
+be used for data in different formats while providing a consistent interface to
+the user. Thus, UConnRCMPy offers all of the features required to process
+standard RCM data including:
 
 \begin{itemize}
 \item
@@ -413,13 +413,6 @@ on functionality from the NumPy~\autocite{vanderWalt2011},
 SciPy~\autocite{Jones2001}, and Matplotlib~\autocite{Hunter2007} Python
 packages.
 
-% \begin{figure}[htbp]
-%     \centering
-%     \includegraphics[width=0.75\textwidth]{figures/flowchart.pdf}
-%     \caption{Flowchart of information in \mbox{UConnRCMPy}}
-%     \label{fig:flowchart}
-% \end{figure}
-
 \section{Conclusions and Future Work}\label{conclusions-and-future-work}
 
 UConnRCMPy provides a framework to enable consistent analysis of RCM data.
@@ -431,7 +424,7 @@ ignition delay is the primary output.
 
 Future plans for UConnRCMPy include the development of a robust test suite to
 prevent regressions and document correct usage of the framework, as well as the
-development of a plugin architechture to allow easy implementation of
+development of a plugin architecture to allow easy implementation of
 user-defined analysis features. Other issues and directions are listed in the
 Issue page of the GitHub repository
 \url{https://github.com/bryanwweber/uconnrcmpy/issues/}.
