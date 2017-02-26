@@ -278,43 +278,43 @@ temperature~\autocite{Das2012a,Uddi2012}.
 \section{Implementation and Usage of UConnRCMPy}\label{implementation-and-usage-of-uconnrcmpy}
 
 UConnRCMPy is constructed in a hierarchical manner. The main user interface to
-UConnRCMPy is through the \python|Condition| class, the highest level of data
-representation. The \python|Condition| class contains all of the information
+UConnRCMPy is through the \pybox{Condition} class, the highest level of data
+representation. The \pybox{Condition} class contains all of the information
 pertaining to the experiments at a given condition. The intended use of this
 class is in an interactive Python interpreter (the authors prefer the Jupyter
 Notebook with an IPython kernel~\autocite{Perez2007}). First, the user creates
-an instance of the \python|Condition| class.
+an instance of the \pybox{Condition} class.
 
-\begin{minted}{python}
+\begin{pythonbox}
 from uconnrcmpy import Condition
 %matplotlib qt5
 
 cond_00_02 = Condition(cti_file='./species.cti')
-\end{minted}
+\end{pythonbox}
 
-The \python|cti_file| argument to \python|Condition| must point to a file in the
+The \pybox{cti_file} argument to \pybox{Condition} must point to a file in the
 CTI format that contains the thermodynamic and reaction information for the
 species in the mixture. The experiments in the following example were conducted
 with mixtures of propane, oxygen, and nitrogen~\autocite{Dames2016}. The CTI
 file necessary to run this example can be found in the Supplementary Material of
 the work by \textcite{Dames2016}. Then, the composition of the mixture under
-consideration must be added to the \python|initial_state| parameter of the
-\python|ideal_gas()| function in the CTI file:
+consideration must be added to the \pybox{initial_state} parameter of the
+\pybox{ideal_gas()} function in the CTI file:
 
-\begin{minted}{python}
+\begin{pythonbox}
 ideal_gas(
     name='gas', elements=..., species=..., reactions='all',
     initial_state=state(mole_fractions='C3H8:0.0403,O2:0.1008,N2:0.8589'))
-\end{minted}
+\end{pythonbox}
 
 Ellipses indicate input that was truncated to save space; the truncated input is
 present in the file available with the work of \textcite{Dames2016}. The
-\python|mole_fractions| must be set to the appropriate values. The condition in
+\pybox{mole_fractions} must be set to the appropriate values. The condition in
 this example is for a fuel rich mixture, with a target \(P_C\) of \SI{30}{\bar}.
 
-After initializing the \python|Condition|, the user conducts a reactive
-experiment with the RCM and adds the experiment to the \python|Condition| using
-the \python|add_experiment()| method. As each experiment is processed by
+After initializing the \pybox{Condition}, the user conducts a reactive
+experiment with the RCM and adds the experiment to the \pybox{Condition} using
+the \pybox{add_experiment()} method. As each experiment is processed by
 UConnRCMPy, the information from that run is added to the system clipboard for
 pasting into some spreadsheet software. In the current version, the information
 copied is the time of day of the experiment, the initial pressure, the initial
@@ -322,11 +322,11 @@ temperature, the pressure at the EOC, the overall and first stage ignition
 delays, an estimate of the EOC temperature, some information about the
 compression ratio of the reactor, and the filter frequnecy used.
 
-\begin{minted}{python}
+\begin{pythonbox}
 # Conduct reactive experiment #1 on the RCM
 cond_00_02.add_experiment('00_in_02_mm_373K-1282t-100x-19-Jul-15-1633.txt')
 # ... conduct and add other reactive experiments
-\end{minted}
+\end{pythonbox}
 
 In general, for a given condition, the user will conduct and process all of the
 reactive experiments before conducting any non-reactive experiments. Then, the
@@ -335,26 +335,26 @@ condition (i.e., the one whose ignition delay(s) and \(T_C\) are reported) by
 inspection of the data in the spreadsheet. The reference experiment is defined
 as the experimental run whose overall ignition delay is closest to the mean
 overall ignition delay among the experiments at a given condition. To select the
-reference experiment, the user sets the \python|reactive_file| attribute of the
-\python|Condition| instance. For this case, the reference experiment is the run
+reference experiment, the user sets the \pybox{reactive_file} attribute of the
+\pybox{Condition} instance. For this case, the reference experiment is the run
 that took place at 16:33:
 
-\begin{minted}{python}
+\begin{pythonbox}
 cond_00_02.reactive_file = '00_in_02_mm_373K-1282t-100x-19-Jul-15-1633.txt'
-\end{minted}
+\end{pythonbox}
 
 Once the reference reactive experiment is selected, the user conducts
 experiments at the same initial pressure and temperature conditions, but with a
 non-reactive mixture. The user adds non-reactive experiments to the
-\python|Condition| by the same \python|add_experiment()| method and UConnRCMPy
+\pybox{Condition} by the same \pybox{add_experiment()} method and UConnRCMPy
 automatically determines whether the experiment is reactive or non-reactive. If
-the user does not specify the \python|reactive_file| attribute, they are
+the user does not specify the \pybox{reactive_file} attribute, they are
 prompted for the file name when the first non-reactive case is added.
 
-\begin{minted}{python}
+\begin{pythonbox}
 # Conduct non-reactive experiment #1 on the RCM
 cond_00_02.add_experiment('NR_00_in_02_mm_373K-1278t-100x-19-Jul-15-1652.txt')
-\end{minted}
+\end{pythonbox}
 
 UConnRCMPy determines that this is a non-reactive experiment and generates a new
 figure that compares the current non-reactive case with the reference reactive
@@ -364,44 +364,39 @@ well with the reactive pressure and no further experiments are necessary; in
 principle, any number of non-reactive experiments can be conducted and added to
 the figure for comparison. Since there is good agreement between the
 non-reactive and reactive pressure traces, the user sets the
-\python|nonreactive_file| attribute of the \python|Condition| instance.
+\pybox{nonreactive_file} attribute of the \pybox{Condition} instance.
 
-\begin{minted}{python}
-cond_00_02.nonreactive_file = 'NR_00_in_02_mm_373K-1278t-100x-19-Jul-15-1652.txt'
-\end{minted}
+\begin{pythonbox}
+cond_00_02.nonreactive_file='NR_00_in_02_mm_373K-1278t-100x-19-Jul-15-1652.txt'
+\end{pythonbox}
 
-Once the non-reactive case is chosen, the \python|create_volume_trace()| method
+Once the non-reactive case is chosen, the \pybox{create_volume_trace()} method
 can be run. This method requires three attributes to be set on the
-\python|Condition| instance: \python|nonreactive_end_time| which controls the
-end time for volume trace generation, \python|reactive_end_time| which controls
+\pybox{Condition} instance: \pybox{nonreactive_end_time} which controls the
+end time for volume trace generation, \pybox{reactive_end_time} which controls
 the length of the pressure trace stored in the output file, and
-\python|reactive_compression_time| which is the length of the compression
+\pybox{reactive_compression_time} which is the length of the compression
 stroke. All of the values must be supplied in units of milliseconds.
 
-\begin{minted}{python}
-    cond_00_02.nonreactive_end_time = 400
-    cond_00_02.reactive_end_time = 80
-    cond_00_02.reactive_compression_time = 36
-\end{minted}
+\begin{pythonbox}
+cond_00_02.nonreactive_end_time = 400
+cond_00_02.reactive_end_time = 80
+cond_00_02.reactive_compression_time = 36
+\end{pythonbox}
 
-After generating the volume trace, \python|create_volume_trace()| writes the
-\python|volume.csv| file, the pressure trace file, and a file called
-\python|volume-trace.yaml|, which contains the values that were set for each
+After generating the volume trace, \pybox{create_volume_trace()} writes the
+\pybox{volume.csv} file, the pressure trace file, and a file called
+\pybox{volume-trace.yaml}, which contains the values that were set for each
 attribute. The final step to conduct the simulations to calculate \(T_C\) and
 the simulated ignition delay. This is done by the user by running the
-\python|compare_to_sim()| function. This function takes two optional arguments,
-\python|run_reactive| and \python|run_nonreactive|. These determine which
+\pybox{compare_to_sim()} function. This function takes two optional arguments,
+\pybox{run_reactive} and \pybox{run_nonreactive}. These determine which
 type(s) of simulation(s) should be conducted.
 
-\begin{minted}{python}
+\begin{pythonbox}
 cond_00_02.create_volume_trace()
 cond_00_02.compare_to_sim(run_reactive=True, run_nonreactive=True)
-\end{minted}
-
-% The general flow of the user interaction with UConnRCMPy is shown in
-% \cref{fig:flowchart}. The Inputs are required input from the
-% user, while the User Interface are classes and functions called by the
-% user during processing.
+\end{pythonbox}
 
 UConnRCMPy is documented using standard Python docstrings for functions and
 classes. The documentation is converted to HTML files by the Sphinx
