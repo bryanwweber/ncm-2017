@@ -88,7 +88,7 @@ For transportation applications, biodiesel is an important constituent in
 improving environmental friendliness of fuels, due to its renewability when
 produced from sustainable agricultural crops and its ability to reduce emissions
 relative to conventionally fueled engines~\autocite{Hoekman2012}. A recent
-review paper summarizes the recent work on methyl esters relevant to biodiesel
+review paper summarizes the work on methyl esters relevant to biodiesel
 combustion~\autocite{Coniglio2013}. Autoignition of methyl butanoate (MB,
 \ce{C5H10O2}) has been well-studied in both shock tube and rapid compression
 machine experiments, and readers are referred to the review of
@@ -101,24 +101,25 @@ suitable biodiesel surrogate~\autocite{Coniglio2013}.
 
 Larger methyl esters such as methyl valerate (MV, \ce{C6H12O2}, methyl
 pentanoate) have also been studied as possible biodiesel surrogates.
-\textcite{Hadj-Ali2009} used a rapid compression machine to study the
+\textcite{Hadj-Ali2009} used a rapid compression machine (RCM) to study the
 autoignition of several methyl esters including MV. Although MV exhibited
 two-stage ignition in this study, little additional research has been done on
 its oxidation. \textcite{Korobeinichev2015} studied MV in premixed laminar
 flames and extended a detailed high temperature chemical kinetic model to
-include the MV and methyl hexanoate. \textcite{Dmitriev2015} added MV to
+include MV and methyl hexanoate. \textcite{Dmitriev2015} added MV to
 n-heptane/toluene fuel blends to determine the resulting intermediate species in
 premixed flames using a flat burner at \SI{1}{atm} and an equivalence ratio of
 1.75. The addition of MV helped reduce soot forming intermediates including
-benzene, cyclopentadienyl, acetylene, propargyl, and vinylacetylene.
-\textcite{Hayes2009} computationally examined the peroxy radical isomerization
-reactions for MV to better understand the low temperature reaction pathways.
-\textcite{Dievart2013} used diffusion flames in the counterflow configuration to
-determine extinction limits for a number of methyl esters, including MV, and
-validated a detailed kinetic model with the experimental data.
+benzene, cyclopentadienyl, acetylene, propargyl, and
+vinylacetylene~\autocite{Dmitriev2015}. \textcite{Hayes2009} computationally
+examined the peroxy radical isomerization reactions for MV to better understand
+the low temperature reaction pathways. Finally, \textcite{Dievart2013} used
+diffusion flames in the counterflow configuration to determine extinction limits
+for a number of methyl esters, including MV, and validated a detailed kinetic
+model with the experimental data.
 
 This work provides additional data for the autoignition of MV. Data is collected
-in a rapid compression machine (RCM) under engine relevant conditions spanning
+in a RCM under engine relevant conditions spanning
 from \SIrange{15}{30}{\bar}, equivalence ratios from \numrange{0.25}{2.0}, and
 temperatures from \SIrange{682}{1048}{\K}. The NTC region of MV is mapped out to
 provide additional information on the fidelity of using MV as a biodiesel
@@ -263,10 +264,10 @@ derivative of the pressure in the simulations is computed by second order
 Lagrange polynomials, as discussed by \textcite{Chapra2010}.
 
 To the best of our knowledge, there are three mechanisms for MV combustion
-available in the literature. The first two, by \textcite{Dmitriev2015} and
-\textcite{Korobeinichev2015}, were developed to simulate flames, and do not
-include the low-temperature chemistry necessary to simulate the conditions in
-these experiments. The third model was developed by \textcite{Dievart2013} and
+available in the literature. The first two, by \textcite{Korobeinichev2015} and
+\textcite{Dmitriev2015}, were developed to simulate flames, and do not include
+the low-temperature chemistry necessary to simulate the conditions in these
+experiments. The third model was developed by \textcite{Dievart2013} and
 includes low-temperature chemistry of MV, although it was only validated by
 comparison with flame extinction limits.
 % To use this mechanism in Cantera, we

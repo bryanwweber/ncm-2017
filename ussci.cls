@@ -22,37 +22,37 @@
 
 \LoadClass{article}
 
-\RequirePackage{tcolorbox}
-\tcbuselibrary{minted,breakable,skins,xparse}
-\usemintedstyle{friendly}
-\newmintinline[python]{python}{}
-
-\newtcblisting{pythonbox}{%
-    listing only,
-    minted language=python,
-    breakable,
-    skin=enhanced jigsaw,
-    colback=black!10!white,
-    colframe=black!25!black,
-    pad at break*=2mm
-}
-
-\DeclareTotalTCBox{\pybox}{v}{%
-    nobeforeafter,
-    tcbox raise base,
-    arc=0pt,
-    outer arc=0pt,
-    top=0pt,
-    bottom=0pt,
-    left=0mm,
-    right=0mm,
-    leftrule=0pt,
-    rightrule=0pt,
-    toprule=0mm,
-    bottomrule=0mm,
-    boxsep=0.5mm,
-    colback=black!10!white
-}{\python|#1|}
+% \RequirePackage{tcolorbox}
+% \tcbuselibrary{minted,breakable,skins,xparse}
+% \usemintedstyle{friendly}
+% \newmintinline[python]{python}{}
+%
+% \newtcblisting{pythonbox}{%
+%     listing only,
+%     minted language=python,
+%     breakable,
+%     skin=enhanced jigsaw,
+%     colback=black!10!white,
+%     colframe=black!25!black,
+%     pad at break*=2mm
+% }
+%
+% \DeclareTotalTCBox{\pybox}{v}{%
+%     nobeforeafter,
+%     tcbox raise base,
+%     arc=0pt,
+%     outer arc=0pt,
+%     top=0pt,
+%     bottom=0pt,
+%     left=0mm,
+%     right=0mm,
+%     leftrule=0pt,
+%     rightrule=0pt,
+%     toprule=0mm,
+%     bottomrule=0mm,
+%     boxsep=0.5mm,
+%     colback=black!10!white
+% }{\python|#1|}
 
 \RequirePackage{calc}
 
