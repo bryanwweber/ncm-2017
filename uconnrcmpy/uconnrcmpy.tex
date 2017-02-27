@@ -120,7 +120,7 @@ as a condition.
 The dynamic pressure transducer outputs a charge signal that is converted to a
 voltage signal by a charge amplifier with a nominal output of \SI{0}{\V}. In
 addition, the output range of \SIrange{0}{10}{\V} is set by the operator to
-correspond to a particular pressure range by setting a ``scale factor''. The
+correspond to a particular pressure range by setting a ``scale factor.'' The
 voltage output from the charge amplifier is digitized by a hardware data
 acquisition system and recorded into a plain text file by a LabView Virtual
 Instrument. \Cref{fig:raw-voltage} shows a typical voltage trace measured from
@@ -160,12 +160,13 @@ frequency and demonstrates that the residuals are nearly linear for a range of
 cutoff frequencies. This range tends to start near one-twentieth the Nyquist
 frequency, as demonstrated by the left-most line labeled ``Fitting Edges'' on
 \cref{fig:residuals}. To determine the right edge of the linear region, a series
-of linear regressions are performed. The $y$-intercept of the regression with
-the highest coefficient of determination is used to choose the optimal cutoff
-frequency. The right-most line labeled ``Fitting Edges'' in \cref{fig:residuals}
-demonstrates a case where the end point set at \num{0.15} times the Nyquist
-frequency produces the best fit. The optimal cutoff frequency is chosen as the
-frequency at the intersection of the $y$-intercept and the residuals curve.
+of linear regressions of the residuals are performed. The $y$-intercept of the
+regression with the highest coefficient of determination is used to choose the
+optimal cutoff frequency. The right-most line labeled ``Fitting Edges'' in
+\cref{fig:residuals} demonstrates a case where the end point set at \num{0.15}
+times the Nyquist frequency produces the best fit. The optimal cutoff frequency
+is chosen as the frequency at the intersection of the $y$-intercept and the
+residuals curve.
 
 After filtering, the voltage trace is converted to a pressure trace by
 correcting for the offset from the nominal initial volage of \SI{0}{\V} apparent
@@ -265,15 +266,14 @@ transfer into simulations, a non-reactive experiment is conducted, where
 \(\text{O}_2\) in the oxidizer is replaced with \(\text{N}_2\).
 
 To apply the effect of the post-compression heat loss into the simulations, the
-reaction chamber is modeled as undergoing an adiabatic volume expansion after
-EOC. Since the post-compression time is modeled as an isentropic expansion, the
-same procedure is used as in the computation of \(T_C\) to compute a volume
-trace for the post-EOC time. The only difference is that the non-reactive
-pressure trace is used after the EOC instead of the reactive pressure trace.
-This procedure has been validated experimentally by measuring the temperature in
-the reaction chamber during and after the compression stroke. The temperature of
-the reactants was found to be within $\pm\sim $\SI{5}{\K} of the simulated
-temperature~\autocite{Das2012a,Uddi2012}.
+reaction chamber is modeled as undergoing an isentropic volume expansion after
+EOC, and the same procedure is used as in the computation of \(T_C\) to compute
+a volume trace for the post-EOC time. The only difference is that the
+non-reactive pressure trace is used after the EOC instead of the reactive
+pressure trace. This procedure has been validated experimentally by measuring
+the temperature in the reaction chamber during and after the compression stroke.
+The temperature of the reactants was found to be within $\pm\sim $\SI{5}{\K} of
+the simulated temperature~\autocite{Das2012a,Uddi2012}.
 
 \section{Implementation and Usage of UConnRCMPy}\label{implementation-and-usage-of-uconnrcmpy}
 
